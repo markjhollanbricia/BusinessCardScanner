@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.ContentFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Server">
+
+
+
+    <RelativeLayout
+    android:id="@+id/relative1"
+    android:layout_marginTop="20dp"
+    android:layout_marginBottom="50dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_marginTop="1dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:text="Server"
+                android:layout_marginBottom="5dp"
+                android:textColor="#ffffff"
+                android:textSize="30sp"
+                />
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="20dp"
+            android:rotation="45"
+            android:layout_marginTop="-10dp"
+            android:layout_below="@+id/linearLayout1"
+            android:layout_centerHorizontal="true"
+            android:layout_height="20dp"
+
+            />
+
+        <RelativeLayout
+            android:id="@+id/relative2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageView1"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="30dp"
+            >
+
+            <ImageView
+                android:id="@+id/imgView_userIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@color/colorPrimary"
+                android:padding="8dp"
+                android:tint="@color/white"
+
+                />
+
+            <EditText
+                android:id="@+id/server"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignBottom="@+id/imgView_userIcon"
+                android:layout_toRightOf="@+id/imgView_userIcon"
+                android:background="@color/editTextBG"
+                android:hint="Server"
+                android:paddingLeft="20dp"
+                android:textSize="15sp"
+                />
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/relative3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative2"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
+            >
+
+            <ImageView
+                android:id="@+id/imgView_Icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@color/colorPrimary"
+                android:padding="8dp"
+                android:tint="@color/white"
+
+                />
+
+            <EditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignBottom="@+id/imgView_Icon"
+                android:layout_toRightOf="@+id/imgView_Icon"
+                android:background="@color/editTextBG"
+                android:hint="Username"
+                android:paddingLeft="20dp"
+                android:textSize="15sp"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relative4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative3"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
+            >
+
+            <ImageView
+                android:id="@+id/Icon1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@color/colorPrimary"
+                android:padding="8dp"
+                android:tint="@color/white"
+
+                />
+
+            <EditText
+                android:id="@+id/pass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignBottom="@+id/Icon1"
+                android:layout_toRightOf="@+id/Icon1"
+                android:background="@color/editTextBG"
+                android:hint="Password"
+                android:paddingLeft="20dp"
+                android:textSize="15sp"
+                />
+        </RelativeLayout>
+
+
+        <Button
+            android:id="@+id/test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/server"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="250dp"
+            android:layout_marginRight="30dp"
+            android:background="@color/colorPrimary"
+            android:fontFamily="sans-serif-medium"
+            android:text="Test Connection"
+            android:textColor="#ffffff"
+            tools:ignore="NotSibling" />
+
+        <Button
+            android:id="@+id/submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/pass"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="300dp"
+            android:layout_marginRight="30dp"
+            android:background="@color/colorPrimary"
+            android:fontFamily="sans-serif-medium"
+            android:text="Submit"
+            android:textColor="#ffffff"
+            tools:ignore="NotSibling" />
+
+
+    </RelativeLayout>
+
+
+
+</android.support.v7.widget.ContentFrameLayout>

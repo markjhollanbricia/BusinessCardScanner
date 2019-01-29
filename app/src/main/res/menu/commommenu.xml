@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/itm1"
+        android:icon="@drawable/ic_more"
+        android:title="Item"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/itm2"
+        android:icon="@drawable/ic_sync"
+        android:title="Item"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/Sort"
+        android:title="Sort by"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/Edit"
+        android:title="Edit groups"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/Move"
+        android:title="Move to group"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/Import"
+        android:title="Import contacts"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/Export"
+        android:title="Export contacts"
+        app:showAsAction="never" />
+</menu>

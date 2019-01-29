@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">BusinessCardScanner</string>
+
+    -
+    <string-array name="country_arrays">
+
+        <item>Country</item>
+
+        <item>Malaysia</item>
+
+        <item>United States</item>
+
+        <item>Indonesia</item>
+
+        <item>France</item>
+
+        <item>Italy</item>
+
+        <item>Singapore</item>
+
+        <item>New Zealand</item>
+
+        <item>India</item>
+
+    </string-array>
+
+
+    -
+    <string-array name="company_arrays">
+
+        <item>Company</item>
+
+        <item>ALT Cladding Inc.</item>
+
+        <item>UNILAB</item>
+
+        <item>JP MORGAN</item>
+
+        <item>NOVOLAND </item>
+
+        <item>AYALA LAND</item>
+
+        <item>CAMELLA</item>
+
+        <item>SMDC</item>
+
+        <item>MDC</item>
+
+    </string-array>
+</resources>
