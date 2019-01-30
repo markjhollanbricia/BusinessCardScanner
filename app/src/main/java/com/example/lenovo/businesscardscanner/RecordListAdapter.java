@@ -13,13 +13,15 @@ import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class RecordListAdapter extends BaseAdapter {
 
     private Context context;
     private int layout;
     private ArrayList<Model> recordList;
-
+    List<Model> modellist;
     public RecordListAdapter(Context context, int layout, ArrayList<Model> recordList)
     {
         this.context = context;
@@ -80,5 +82,26 @@ private class ViewHolder
         Bitmap bitmap = BitmapFactory.decodeByteArray(recordImage,0,recordImage.length);
         holder.imageView.setImageBitmap(bitmap);
         return row;
+    }
+    public void filter(String charText)
+    {
+        charText = charText.toLowerCase(Locale.getDefault());
+        modellist.clear();
+
+        if(charText.length() == 0)
+        {
+            modellist.addAll(recordList);
+        }
+        else
+        {
+            for(Model model : recordList)
+            {
+                if(model.getName().toLowerCase(Locale.getDefault()).contains(charText))
+                {
+                    modellist.add(model);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 }

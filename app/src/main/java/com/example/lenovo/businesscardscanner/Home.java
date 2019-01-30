@@ -11,12 +11,15 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
@@ -28,15 +31,14 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class Home extends AppCompatActivity {
     ImageButton cam;
     ImageView iv;
     DBHandler myDB;
+    EditText search;
     ArrayList<Model> mList;
-
-
-
     RecordListAdapter mAdapter = null;
     private static final int REQUEST_IMAGE_CAPTURE = 101;
     private static final int REQUEST_GALLERY = 101;
@@ -44,15 +46,12 @@ public class Home extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.activity_home);
 
         cam = (ImageButton)findViewById(R.id.imageButton2);
         iv = (ImageView) findViewById(R.id.iv1);
+        search = (EditText) findViewById(R.id.editText);
         myDB = new DBHandler(this);
-
-
         final ListView listView = (ListView) findViewById(R.id.listView);
         mList = new ArrayList<>();
         mAdapter = new RecordListAdapter(this,R.layout.row,mList);
@@ -90,6 +89,7 @@ public class Home extends AppCompatActivity {
 
                 }
             });
+
 
     }
 
@@ -146,6 +146,7 @@ public class Home extends AppCompatActivity {
                 startActivityForResult(imageTakeIntent, REQUEST_IMAGE_CAPTURE);
             }
     }
+
 
         @Override
         protected void onActivityResult(int reqCode, int resCode, @Nullable Intent data)
