@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,8 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private SliderAdapter sp;
 
     private TextView[] mdots;
-
-    int x;
+    //
     private Button btnprev;
     private Button btnnext;
 
@@ -32,6 +32,12 @@ public class MainActivity extends AppCompatActivity {
 
         btnprev = (Button) findViewById(R.id.btnprev);
         btnnext = (Button) findViewById(R.id.btnnext);
+        btnnext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                slidepager.setCurrentItem(1);
+            }
+        });
 
         sp = new SliderAdapter(this);
         slidepager.setAdapter(sp);
@@ -41,15 +47,14 @@ public class MainActivity extends AppCompatActivity {
         slidepager.addOnPageChangeListener(viewListener);
     }
     public void addDotsIndicator(int position){
-        mdots = new TextView[3];
 
+        mdots= new TextView[3];
+        dotlayout.removeAllViews();
         for(int i=0; i<mdots.length; i++){
             mdots[i] = new TextView(this);
-            mdots[i].setText(Html.fromHtml("&#8226;" + "&#8226;" + "&#8226;"));
+            mdots[i].setText(Html.fromHtml("&#8226;"));
             mdots[i].setTextSize(35);
-            mdots[i].setTextSize(20);
             mdots[i].setTextColor(getResources().getColor(R.color.transparent));
-
             dotlayout.addView(mdots[i]);
         }
 
@@ -66,23 +71,52 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPageSelected(int i) {
+
             addDotsIndicator(i);
             mCurrentPage = 1;
 
             if(i==0){
-                btnprev.setEnabled(false);
-                btnnext.setEnabled(true);
+
                 btnprev.setVisibility(View.INVISIBLE);
 
                 btnnext.setText("Next");
-                btnprev.setText("");
-            }else if (i == mdots.length - 1){
+                btnnext.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        slidepager.setCurrentItem(1);
+                    }
+                });
+
+            }
+            else if (i==mCurrentPage)
+            {
+                btnnext.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        slidepager.setCurrentItem(2);
+                    }
+                });
+                btnprev.setVisibility(View.VISIBLE);
+                btnprev.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        slidepager.setCurrentItem(0);
+                    }
+                });
+            }
+            else if (i == mdots.length - 1){
                 btnnext.setEnabled(true);
-                btnprev.setEnabled(true);
+
                 btnprev.setVisibility(View.VISIBLE);
 
                 btnnext.setText("Finish");
                 btnprev.setText("Back");
+                btnprev.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        slidepager.setCurrentItem(1);
+                    }
+                });
 
                 btnnext.setOnClickListener(
                         new Button.OnClickListener()
@@ -94,16 +128,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                 );
-            }else{
-                btnnext.setEnabled(true);
-                btnprev.setEnabled(true);
-                btnprev.setVisibility(View.VISIBLE);
-
-                btnnext.setText("Next");
-                btnprev.setText("Back");
-
-
-
             }
 
         }

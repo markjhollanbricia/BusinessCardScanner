@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.view.View;
 import android.widget.ImageView;
 
-public class Camera extends AppCompatActivity {
+public class  Camera extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 101;
     private static final int REQUEST_GALLERY = 1;
