@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView[] mdots;
 
+    int x;
     private Button btnprev;
     private Button btnnext;
 
