@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private SliderAdapter sp;
 
     private TextView[] mdots;
-    //
+    //then make commit so i can see the new edit
     private Button btnprev;
     private Button btnnext;
 
