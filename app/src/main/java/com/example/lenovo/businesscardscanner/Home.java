@@ -57,7 +57,7 @@ public class Home extends AppCompatActivity {
     String camerPermission[];
     String storgePermission[];
     ImageButton cam;
-    ImageView iv;
+
     DBHandler myDB;
     EditText search;
     ArrayList<Model> mList;
@@ -72,7 +72,7 @@ public class Home extends AppCompatActivity {
         camerPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storgePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         cam = (ImageButton)findViewById(R.id.imageButton2);
-        iv = (ImageView) findViewById(R.id.iv1);
+
         search = (EditText) findViewById(R.id.editText);
         myDB = new DBHandler(this);
 
@@ -189,37 +189,22 @@ public class Home extends AppCompatActivity {
                 }
                 if (requestCode==CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
                 {
-                    // Toast.makeText(this, "CROP_IMAGE_ACTIVITY_REQUEST_CODE ok", Toast.LENGTH_SHORT).show();
+
                     CropImage.ActivityResult result=CropImage.getActivityResult(data);
+
+
                     if (resultCode==RESULT_OK) {
                         // Toast.makeText(this, "result 2 ok", Toast.LENGTH_SHORT).show();
                         Uri resultUri = result.getUri();
-                       // iv.setImageURI(resultUri);
-                        // Toast.makeText(this, "preview", Toast.LENGTH_SHORT).show();
+                        Log.d("ffddf","go requrdt"+resultUri);
+                        Intent intent = new Intent(this,BScanner.class);
+                        intent.putExtra("data",resultUri.toString());
+                        startActivity(intent);
+                        finish();
+
+
                         //get Drawable
-                        BitmapDrawable bitmapDrawable = (BitmapDrawable) iv.getDrawable();
-                        Bitmap bitmap = bitmapDrawable.getBitmap();
-                        TextRecognizer recognizer = new TextRecognizer.Builder(getApplicationContext()).build();
-                        if (!recognizer.isOperational()) {
-                            Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Frame frame = new Frame.Builder().setBitmap(bitmap).build();
-                            SparseArray<TextBlock> items = recognizer.detect(frame);
-                            StringBuilder builder = new StringBuilder();
-                            for (int i = 0; i < items.size(); i++)
-                            {
-                                textBlock = items.get(items.keyAt(i));
 
-                                builder.append("\n");
-
-                            }
-                            builder.append(textBlock.getValue());
-                            Intent intent = new Intent(this,BScanner.class);
-                            intent.putExtra("data",builder.toString());
-                            startActivity(intent);
-
-
-                        }
                     }
                     else if (requestCode==CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE){
 
