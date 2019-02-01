@@ -73,9 +73,9 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         pn = (EditText) findViewById(R.id.cpnum);
         e = (EditText) findViewById(R.id.email);
         p = (EditText) findViewById(R.id.position);
-        spin1 = (Spinner)findViewById(R.id.company);
+        spin1 = (Spinner) findViewById(R.id.company);
         spin2 = (Spinner) findViewById(R.id.country);
-        btnsave =(Button) findViewById(R.id.save1);
+        btnsave = (Button) findViewById(R.id.save1);
         view = (Button) findViewById(R.id.view);
         iv1 = (ImageView) findViewById(R.id.iv1);
         btnsave.setOnClickListener(this);
@@ -83,9 +83,8 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
         Bundle extras = getIntent().getExtras();
 
-        if(extras !=null)
-        {
-             value = extras.getString("x");
+        if (extras != null) {
+            value = extras.getString("x");
         }
 
         n.setText(value);
@@ -93,7 +92,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         Uri selectedImgUri = getIntent().getData();
         if (selectedImgUri != null) {
             Log.e("Gallery ImageURI", "" + selectedImgUri);
-            String[] selectedImgPath = { MediaStore.Images.Media.DATA };
+            String[] selectedImgPath = {MediaStore.Images.Media.DATA};
             Cursor cursor = getContentResolver().query(selectedImgUri,
                     selectedImgPath, null, null, null);
             cursor.moveToFirst();
@@ -108,12 +107,9 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         Intent intent_camera = getIntent();
         Bitmap camera_img_bitmap = (Bitmap) intent_camera
                 .getParcelableExtra("BitmapImage");
-        if (camera_img_bitmap != null)
-        {
+        if (camera_img_bitmap != null) {
             iv1.setImageBitmap(camera_img_bitmap);
         }
-
-
 
 
         String[] Company = new String[]{
@@ -128,44 +124,79 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 "MDC"
 
         };
+
+        String[] Country = new String[]{
+                "Country",
+                "Malaysia",
+                "United States",
+                "Indonesia",
+                "France",
+                "Italy",
+                "Singapore",
+                "New Zealand",
+                "India"
+
+        };
         List<String> list = new ArrayList<>(Arrays.asList(Company));
-        ArrayAdapter<String> adap = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,Company)
-        {
+        ArrayAdapter<String> adap = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Company) {
             @Override
-            public boolean isEnabled(int position)
-            {
-                if(position == 0)
-                {
+            public boolean isEnabled(int position) {
+                if (position == 0) {
                     // Disable the second item from Spinner
                     return false;
-                }
-                else
-                {
+                } else {
                     return true;
                 }
             }
+
             @Override
             public View getDropDownView(int position, View convertView,
-                                        ViewGroup parent)
-            {
+                                        ViewGroup parent) {
                 View view = super.getDropDownView(position, convertView, parent);
                 TextView tv = (TextView) view;
-                if(position==0)
-                {
+                if (position == 0) {
                     // Set the disable item text color
                     tv.setTextColor(Color.GRAY);
-                }
-                else
-                {
+                } else {
                     tv.setTextColor(Color.BLACK);
                 }
                 return view;
             }
+
         };
 
         adap.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spin1.setAdapter(adap);
 
+
+        List<String> list1 = new ArrayList<>(Arrays.asList(Country));
+        ArrayAdapter<String> adap1 = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Country) {
+            @Override
+            public boolean isEnabled(int position) {
+                if (position == 0) {
+                    // Disable the second item from Spinner
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView tv = (TextView) view;
+                if (position == 0) {
+                    // Set the disable item text color
+                    tv.setTextColor(Color.GRAY);
+                } else {
+                    tv.setTextColor(Color.BLACK);
+                }
+                return view;
+            }
+        };
+        adap1.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        spin2.setAdapter(adap1);
 
 
         n.addTextChangedListener(new TextWatcher()
