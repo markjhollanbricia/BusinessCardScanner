@@ -78,6 +78,11 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         btnsave = (Button) findViewById(R.id.save1);
         view = (Button) findViewById(R.id.view);
         iv1 = (ImageView) findViewById(R.id.iv1);
+        Intent intent=getIntent();
+        String name= intent.getStringExtra("data");
+        n.setText(name+"");
+
+
         btnsave.setOnClickListener(this);
         viewAll();
 
