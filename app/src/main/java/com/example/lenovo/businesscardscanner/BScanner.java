@@ -27,6 +27,7 @@ import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.FloatMath;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.TextBlock;
+import com.google.android.gms.vision.text.TextRecognizer;
 import com.kosalgeek.asynctask.AsyncResponse;
 import com.kosalgeek.asynctask.PostResponseAsyncTask;
 
@@ -60,6 +65,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     String status2 = "Sync is OFF";
     String status = "Sync is ON";
     DBHandler myDB;
+    TextRecognizer recognizer ;
     ImageView iv1;
     String value;
     final int REQUEST_CODE_GALLERY  = 999;
@@ -68,8 +74,9 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bscanner);
         myDB = new DBHandler(this);
-        n = (EditText) findViewById(R.id.name);
+        n = (EditText) findViewById(R.id.namescanner);
         l = (EditText) findViewById(R.id.lastname);
+        recognizer = new TextRecognizer.Builder(getApplicationContext()).build();
         pn = (EditText) findViewById(R.id.cpnum);
         e = (EditText) findViewById(R.id.email);
         p = (EditText) findViewById(R.id.position);
@@ -79,8 +86,35 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         view = (Button) findViewById(R.id.view);
         iv1 = (ImageView) findViewById(R.id.iv1);
         Intent intent=getIntent();
-        String name= intent.getStringExtra("data");
-        n.setText(name+"");
+        String cropedImgUri= intent.getStringExtra("data");
+        if (cropedImgUri!=null)
+        {
+            Uri resultUri = Uri.parse(cropedImgUri);
+            iv1.setImageURI(resultUri);
+            // Toast.makeText(this, "preview", Toast.LENGTH_SHORT).show();
+            //get Drawable
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) iv1.getDrawable();
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+
+            if (!recognizer.isOperational())
+            {
+                Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+                SparseArray<TextBlock> items = recognizer.detect(frame);
+                StringBuilder builder = new StringBuilder();
+                int size = items.size();
+                Toast.makeText(this, ""+size, Toast.LENGTH_LONG).show();
+
+                TextBlock textBlock = items.valueAt(0);
+                //  builder.append(textBlock.getValue());
+                //  builder.append("\n");
+
+                n.setText(textBlock.getValue()+"");
+            }
+        }
+        else Toast.makeText(this, "Uri = null", Toast.LENGTH_SHORT).show();
 
 
         btnsave.setOnClickListener(this);
@@ -92,7 +126,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             value = extras.getString("x");
         }
 
-        n.setText(value);
+       // n.setText(value);
         /* Getting ImageURI from Gallery from Main Activity */
         Uri selectedImgUri = getIntent().getData();
         if (selectedImgUri != null) {
