@@ -59,7 +59,7 @@ public class Home extends AppCompatActivity {
     ImageButton cam;
     ImageView iv;
     DBHandler myDB;
-    EditText search,n2;
+    EditText search;
     ArrayList<Model> mList;
     RecordListAdapter mAdapter = null;
     //private static final int REQUEST_IMAGE_CAPTURE = 101;
@@ -75,7 +75,7 @@ public class Home extends AppCompatActivity {
         iv = (ImageView) findViewById(R.id.iv1);
         search = (EditText) findViewById(R.id.editText);
         myDB = new DBHandler(this);
-        n2 = (EditText) findViewById(R.id.name2);
+
         final ListView listView = (ListView) findViewById(R.id.listView);
         mList = new ArrayList<>();
         mAdapter = new RecordListAdapter(this,R.layout.row,mList);
@@ -121,8 +121,8 @@ public class Home extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
 
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.commommenu, menu);
+        return true;
     }
 
     @Override
@@ -159,6 +159,7 @@ public class Home extends AppCompatActivity {
         {
             Toast.makeText(this,"Export contacts is clicked", Toast.LENGTH_SHORT).show();
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -193,7 +194,7 @@ public class Home extends AppCompatActivity {
                     if (resultCode==RESULT_OK) {
                         // Toast.makeText(this, "result 2 ok", Toast.LENGTH_SHORT).show();
                         Uri resultUri = result.getUri();
-                        iv.setImageURI(resultUri);
+                       // iv.setImageURI(resultUri);
                         // Toast.makeText(this, "preview", Toast.LENGTH_SHORT).show();
                         //get Drawable
                         BitmapDrawable bitmapDrawable = (BitmapDrawable) iv.getDrawable();
@@ -213,7 +214,9 @@ public class Home extends AppCompatActivity {
 
                             }
                             builder.append(textBlock.getValue());
-                            n2.setText("Name : " +(builder.toString())) ;
+                            Intent intent = new Intent(this,BScanner.class);
+                            intent.putExtra("data",builder.toString());
+                            startActivity(intent);
 
 
                         }
