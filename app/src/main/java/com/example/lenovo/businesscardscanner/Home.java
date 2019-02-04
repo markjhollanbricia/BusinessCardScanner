@@ -132,7 +132,7 @@ public class Home extends AppCompatActivity {
         if(id==R.id.itm1)
         {
             Toast.makeText(this,"More is clicked", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, Camera.class));
+            startActivity(new Intent(this, edit.class));
         }
         else if(id==R.id.itm2)
         {

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".edit">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:stretchColumns="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="102dp"
+                android:layout_marginTop="29dp"
+                android:background="@drawable/ss" />
+
+            <Button
+                android:id="@+id/ButtonCon"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:background="#FFFFFF"
+                android:drawableLeft="@drawable/phn"
+                android:text="Contact Us"
+                android:textSize="15dp"
+
+                />
+
+            <Button
+                android:layout_marginTop="20dp"
+                android:id="@+id/ButtonRate"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#FFFFFF"
+                android:drawableLeft="@drawable/up"
+                android:text="Rate this App"
+                android:textSize="15dp"
+                />
+
+            <Button
+                android:layout_marginTop="20dp"
+                android:id="@+id/ButtonRecom"
+                android:layout_width="397dp"
+                android:layout_height="60dp"
+                android:background="#FFFFFF"
+                android:drawableLeft="@drawable/add"
+                android:text="Recommend to a friend"
+                android:textSize="15dp"
+                />
+
+            <Button
+                android:layout_marginTop="20dp"
+                android:id="@+id/ButtonFB"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#FFFFFF"
+                android:drawableLeft="@drawable/fb"
+                android:text="Follow us on Facebook"
+                android:textSize="15dp" />
+
+            <Button
+                android:layout_marginTop="20dp"
+                android:id="@+id/ButtonInsta"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#FFFFFF"
+                android:drawableLeft="@drawable/insta"
+                android:text="Follow us on Instagram"
+                android:textSize="15dp"
+                />
+
+            <Button
+                android:layout_marginTop="20dp"
+                android:id="@+id/ButtonF"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#FFFFFF"
+                android:drawableLeft="@drawable/faq"
+                android:text="FAQ"
+                android:textSize="15dp"
+                />
+
+            <Button
+                android:layout_marginTop="20dp"
+                android:id="@+id/ButtonA"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#FFFFFF"
+                android:drawableLeft="@drawable/abt"
+                android:text="About"
+                android:textSize="15dp"
+                />
+        </TableLayout>
+    </LinearLayout>
+
+</ScrollView>

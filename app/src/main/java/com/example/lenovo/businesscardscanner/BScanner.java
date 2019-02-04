@@ -131,7 +131,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         Uri selectedImgUri = getIntent().getData();
         if (selectedImgUri != null) {
             Log.e("Gallery ImageURI", "" + selectedImgUri);
-            String[] selectedImgPath = {MediaStore.Images.Media.DATA};
+            String[] selectedImgPath = { MediaStore.Images.Media.DATA };
             Cursor cursor = getContentResolver().query(selectedImgUri,
                     selectedImgPath, null, null, null);
             cursor.moveToFirst();

@@ -1,0 +1,30 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.lenovo.businesscardscanner.tabpage">
+    <item
+        android:id="@+id/navigation_phone"
+        android:icon="@drawable/ic_phone_black_24dp"
+        android:title="PhoneNumber" />
+
+    <item
+        android:id="@+id/navigation_email"
+        android:icon="@drawable/ic_email_black_24dp"
+        android:title="Email" />
+
+    <item
+        android:id="@+id/navigation_company"
+        android:icon="@drawable/ic_account_balance_black_24dp"
+        android:title="Company" />
+
+    <item
+        android:id="@+id/navigation_location"
+        android:icon="@drawable/ic_place_black_24dp"
+        android:title="Location" />
+
+    <item
+        android:id="@+id/navigation_note"
+        android:icon="@drawable/ic_attachment_black_24dp"
+        android:title="Note" />
+
+</menu>
