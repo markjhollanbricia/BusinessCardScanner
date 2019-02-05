@@ -54,7 +54,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class BScanner extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
@@ -68,6 +71,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     TextRecognizer recognizer ;
     ImageView iv1;
     String value;
+    SparseArray<TextBlock> origTextBlocks;
     final int REQUEST_CODE_GALLERY  = 999;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,17 +105,41 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
             }
             else {
-                Frame frame = new Frame.Builder().setBitmap(bitmap).build();
-                SparseArray<TextBlock> items = recognizer.detect(frame);
-                StringBuilder builder = new StringBuilder();
-                int size = items.size();
-                Toast.makeText(this, ""+size, Toast.LENGTH_LONG).show();
+                Frame localFrame = new Frame.Builder().setBitmap(bitmap).build();
+                origTextBlocks = recognizer.detect(localFrame);
+                ArrayList localArrayList = new ArrayList();
+                for (int i = 0; i < origTextBlocks.size(); i++)
+                    localArrayList.add(this.origTextBlocks.valueAt(i));
+                Collections.sort(localArrayList, new Comparator() {
 
-                TextBlock textBlock = items.valueAt(0);
-                //  builder.append(textBlock.getValue());
-                //  builder.append("\n");
 
-                n.setText(textBlock.getValue()+"");
+                    public int compare(Object paramTextBlock1, Object paramTextBlock2) {
+                        TextBlock paramTextBlocknew1 = (TextBlock) paramTextBlock1;
+                        TextBlock paramTextBlocknew2 = (TextBlock) paramTextBlock2;
+
+                        int i = paramTextBlocknew1.getBoundingBox().top - paramTextBlocknew2.getBoundingBox().top;
+                        int j = paramTextBlocknew2.getBoundingBox().left - paramTextBlocknew2.getBoundingBox().left;
+                        if (i != 0)
+                            return i;
+                        return j;
+                    }
+                });
+
+
+                StringBuilder localStringBuilder2 = new StringBuilder();
+                Iterator localIterator = localArrayList.iterator();
+                TextBlock localTextBlock2 = (TextBlock) localIterator.next();
+                this.n.setText(localTextBlock2.getValue()+"");
+                while (localIterator.hasNext()) {
+                    TextBlock localTextBlock = (TextBlock) localIterator.next();
+                    if ((localTextBlock == null) || (localTextBlock.getValue() == null))
+                        continue;
+                    localStringBuilder2.append(localTextBlock.getValue());
+                    localStringBuilder2.append("\n");
+                }
+
+
+
             }
         }
         else Toast.makeText(this, "Uri = null", Toast.LENGTH_SHORT).show();
