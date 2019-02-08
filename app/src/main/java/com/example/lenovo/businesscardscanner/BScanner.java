@@ -41,6 +41,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 import com.kosalgeek.asynctask.AsyncResponse;
@@ -59,6 +60,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BScanner extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     final String TAG = "Contacts";
@@ -68,9 +71,10 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     String status2 = "Sync is OFF";
     String status = "Sync is ON";
     DBHandler myDB;
-    TextRecognizer recognizer ;
+    TextRecognizer detector ;
     ImageView iv1;
-    String value;
+    String v1;
+    String v2;
     SparseArray<TextBlock> origTextBlocks;
     final int REQUEST_CODE_GALLERY  = 999;
     @Override
@@ -80,7 +84,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         myDB = new DBHandler(this);
         n = (EditText) findViewById(R.id.namescanner);
         l = (EditText) findViewById(R.id.lastname);
-        recognizer = new TextRecognizer.Builder(getApplicationContext()).build();
+        // recognizer = new TextRecognizer.Builder(getApplicationContext()).build();
         pn = (EditText) findViewById(R.id.cpnum);
         e = (EditText) findViewById(R.id.email);
         p = (EditText) findViewById(R.id.position);
@@ -89,6 +93,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         btnsave = (Button) findViewById(R.id.save1);
         view = (Button) findViewById(R.id.view);
         iv1 = (ImageView) findViewById(R.id.iv1);
+        detector = new TextRecognizer.Builder(getApplicationContext()).build();
         Intent intent=getIntent();
         String cropedImgUri= intent.getStringExtra("data");
         if (cropedImgUri!=null)
@@ -100,61 +105,57 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             BitmapDrawable bitmapDrawable = (BitmapDrawable) iv1.getDrawable();
             Bitmap bitmap = bitmapDrawable.getBitmap();
 
-            if (!recognizer.isOperational())
+            if (!detector.isOperational())
             {
                 Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
             }
             else {
-                Frame localFrame = new Frame.Builder().setBitmap(bitmap).build();
-                origTextBlocks = recognizer.detect(localFrame);
-                ArrayList localArrayList = new ArrayList();
-                for (int i = 0; i < origTextBlocks.size(); i++)
-                    localArrayList.add(this.origTextBlocks.valueAt(i));
-                Collections.sort(localArrayList, new Comparator() {
+                if (detector.isOperational() && bitmap != null) {
+                    Frame frame = new Frame.Builder().setBitmap(bitmap).build();
 
+                    SparseArray<TextBlock> textBlocks = detector.detect(frame);
+                    String blocks = "";
+                    String lines = "";
+                    String words = "";
 
-                    public int compare(Object paramTextBlock1, Object paramTextBlock2) {
-                        TextBlock paramTextBlocknew1 = (TextBlock) paramTextBlock1;
-                        TextBlock paramTextBlocknew2 = (TextBlock) paramTextBlock2;
-
-                        int i = paramTextBlocknew1.getBoundingBox().top - paramTextBlocknew2.getBoundingBox().top;
-                        int j = paramTextBlocknew2.getBoundingBox().left - paramTextBlocknew2.getBoundingBox().left;
-                        if (i != 0)
-                            return i;
-                        return j;
+                    for (int index = 0; index < textBlocks.size(); index++) {
+                        //extract scanned text blocks here
+                        TextBlock tBlock = textBlocks.valueAt(index);
+                        blocks = blocks + tBlock.getValue() + "\n" + "\n";
+                        for (Text line : tBlock.getComponents()) {
+                            //extract scanned text lines here
+                            lines = lines + line.getValue() + "\n";
+                            for (Text element : line.getComponents()) {
+                                words =  element.getValue();
+                                validator(words);
+                            }
+                        }
                     }
-                });
+
+                    if (textBlocks.size() == 0) {
+                        n.setText("Scan Failed: Found nothing to scan");
+                    } else
+                        {
 
 
-                StringBuilder localStringBuilder2 = new StringBuilder();
-                Iterator localIterator = localArrayList.iterator();
-                TextBlock localTextBlock2 = (TextBlock) localIterator.next();
-                this.n.setText(localTextBlock2.getValue()+"");
-                while (localIterator.hasNext()) {
-                    TextBlock localTextBlock = (TextBlock) localIterator.next();
-                    if ((localTextBlock == null) || (localTextBlock.getValue() == null))
-                        continue;
-                    localStringBuilder2.append(localTextBlock.getValue());
-                    localStringBuilder2.append("\n");
+
+                    }
+
                 }
-
-
-
+                else
+                {
+                    n.setText("Could not set up the detector!");
+                }
             }
         }
-        else Toast.makeText(this, "Uri = null", Toast.LENGTH_SHORT).show();
 
 
         btnsave.setOnClickListener(this);
         viewAll();
 
-        Bundle extras = getIntent().getExtras();
 
-        if (extras != null) {
-            value = extras.getString("x");
-        }
 
-       // n.setText(value);
+        // n.setText(value);
         /* Getting ImageURI from Gallery from Main Activity */
         Uri selectedImgUri = getIntent().getData();
         if (selectedImgUri != null) {
@@ -204,6 +205,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 "India"
 
         };
+
         List<String> list = new ArrayList<>(Arrays.asList(Company));
         ArrayAdapter<String> adap = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Company) {
             @Override
@@ -211,7 +213,9 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 if (position == 0) {
                     // Disable the second item from Spinner
                     return false;
-                } else {
+                }
+                else
+                {
                     return true;
                 }
             }
@@ -241,7 +245,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             @Override
             public boolean isEnabled(int position) {
                 if (position == 0) {
-                    // Disable the second item from Spinner
+
                     return false;
                 } else {
                     return true;
@@ -297,9 +301,71 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
 
 
+    private static final String EMAIL_PATTERN =
+            "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                    "\\@" +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                    "(" +
+                    "\\." +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                    ")+";
+
+    //this pattern is almost correct
+
+    private static final String PHONE_PATTERN =
+            "^[89]\\d{7}$";
+// this not yet.
+
+    private static final String NAME_PATTERN =
+            "/^[a-z ,.'-]+$/i";
+// this not yet correct.
+    // i capture and pick an image in gallery. different business cards and this code gets the email
+    //so i knew that this code works on our problem.
 
 
-    @Override
+
+    public void validator(String recognizeText) {
+
+        Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
+        Pattern phonePattern = Pattern.compile(PHONE_PATTERN);
+        Pattern namePattern = Pattern.compile(NAME_PATTERN);
+
+        String possibleEmail, possiblePhone, possibleName;
+        possibleEmail = possiblePhone = possibleName = "";
+
+        Matcher matcher;
+
+        String[] words = recognizeText.split("\\r?\\n");
+
+        for (String word : words) {
+            //try to determine is the word an email by running a pattern check.
+            matcher = emailPattern.matcher(word);
+            if (matcher.find()) {
+                possibleEmail = possibleEmail + word + " ";
+                continue;
+            }
+
+            //try to determine is the word a phone number by running a pattern check.
+            matcher = phonePattern.matcher(word);
+            if (matcher.find()) {
+                possiblePhone = possiblePhone + word + " ";
+                continue;
+            }
+
+            //try to determine is the word a name by running a pattern check.
+            matcher = namePattern.matcher(word);
+            if (matcher.find()) {
+                possibleName = possibleName + word + " ";
+                continue;
+            }
+        }
+        n.setText(possibleName);
+        e.setText(possibleEmail); //this code and pattern is correct so that the data is almost 80% real
+        p.setText(possiblePhone);
+
+    }
+
+        @Override
     public void onClick(View view)
     {
         byte[] ne = imageViewToByte(iv1);
@@ -386,11 +452,11 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
     private byte[] imageViewToByte(ImageView iv1)
     {
-            Bitmap bitmap = ((BitmapDrawable)iv1.getDrawable()).getBitmap();
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG,100, stream);
-            byte[] byteArray = stream.toByteArray();
-            return byteArray;
+        Bitmap bitmap = ((BitmapDrawable)iv1.getDrawable()).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100, stream);
+        byte[] byteArray = stream.toByteArray();
+        return byteArray;
 
     }
 
@@ -483,7 +549,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                     showMessage("Error", "NO DATA TO DISPLAY");
                 }
                 else
-                    {
+                {
                     StringBuffer buffer = new StringBuffer();
                     while (cursor.moveToNext()) {
                         buffer.append("ID: " + cursor.getString(0) + "\n");

@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,8 +63,7 @@ public class Home extends AppCompatActivity {
     EditText search;
     ArrayList<Model> mList;
     RecordListAdapter mAdapter = null;
-    //private static final int REQUEST_IMAGE_CAPTURE = 101;
-   // private static final int REQUEST_GALLERY = 101;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -107,8 +107,7 @@ public class Home extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
                     Intent intent = new Intent(getApplicationContext(), BScanner.class);
-                    intent.putExtra("x","");
-
+                    intent.putExtra("Model",mList);
                     startActivity(intent);
 
                 }
@@ -189,10 +188,7 @@ public class Home extends AppCompatActivity {
                 }
                 if (requestCode==CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
                 {
-
                     CropImage.ActivityResult result=CropImage.getActivityResult(data);
-
-
                     if (resultCode==RESULT_OK) {
                         // Toast.makeText(this, "result 2 ok", Toast.LENGTH_SHORT).show();
                         Uri resultUri = result.getUri();

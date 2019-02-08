@@ -1,5 +1,7 @@
 package com.example.lenovo.businesscardscanner;
 
+
+
 public class Model
 {
 

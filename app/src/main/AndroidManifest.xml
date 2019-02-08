@@ -41,7 +41,11 @@
 
         <meta-data
             android:name="com.google.android.actions"
-            android:resource="@xml/provider_paths" />
+            android:resource="@xml/provider_paths"
+            />
+        <meta-data
+            android:name="com.google.android.gms.vision.DEPENDENCIES"
+            android:value="ocr"/>
 
         <activity android:name=".Gallery" />
         <activity
