@@ -65,18 +65,19 @@ import java.util.regex.Pattern;
 
 public class BScanner extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     final String TAG = "Contacts";
-    EditText n,l,pn,e,p;
-    Button btnsave,view;
-    Spinner spin1,spin2;
+    EditText n, l, pn, e, p;
+    Button btnsave, view;
+    Spinner spin1, spin2;
     String status2 = "Sync is OFF";
     String status = "Sync is ON";
     DBHandler myDB;
-    TextRecognizer detector ;
+    TextRecognizer detector;
     ImageView iv1;
     String v1;
     String v2;
     SparseArray<TextBlock> origTextBlocks;
-    final int REQUEST_CODE_GALLERY  = 999;
+    final int REQUEST_CODE_GALLERY = 999;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,10 +95,9 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         view = (Button) findViewById(R.id.view);
         iv1 = (ImageView) findViewById(R.id.iv1);
         detector = new TextRecognizer.Builder(getApplicationContext()).build();
-        Intent intent=getIntent();
-        String cropedImgUri= intent.getStringExtra("data");
-        if (cropedImgUri!=null)
-        {
+        Intent intent = getIntent();
+        String cropedImgUri = intent.getStringExtra("data");
+        if (cropedImgUri != null) {
             Uri resultUri = Uri.parse(cropedImgUri);
             iv1.setImageURI(resultUri);
             // Toast.makeText(this, "preview", Toast.LENGTH_SHORT).show();
@@ -105,49 +105,61 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             BitmapDrawable bitmapDrawable = (BitmapDrawable) iv1.getDrawable();
             Bitmap bitmap = bitmapDrawable.getBitmap();
 
-            if (!detector.isOperational())
-            {
+            if (!detector.isOperational()) {
                 Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 if (detector.isOperational() && bitmap != null) {
-                    Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+                    //  Frame frame = new Frame.Builder().setBitmap(bitmap).build();
 
-                    SparseArray<TextBlock> textBlocks = detector.detect(frame);
-                    String blocks = "";
-                    String lines = "";
-                    String words = "";
+                    Frame localFrame = new Frame.Builder().setBitmap(bitmap).build();
+                    origTextBlocks = detector.detect(localFrame);
+                    ArrayList localArrayList = new ArrayList();
+                    for (int i = 0; i < origTextBlocks.size(); i++)
+                        localArrayList.add(this.origTextBlocks.valueAt(i));
+                    Collections.sort(localArrayList, new Comparator() {
 
-                    for (int index = 0; index < textBlocks.size(); index++) {
-                        //extract scanned text blocks here
-                        TextBlock tBlock = textBlocks.valueAt(index);
-                        blocks = blocks + tBlock.getValue() + "\n" + "\n";
-                        for (Text line : tBlock.getComponents()) {
-                            //extract scanned text lines here
-                            lines = lines + line.getValue() + "\n";
-                            for (Text element : line.getComponents()) {
-                                words =  element.getValue();
-                                validator(words);
 
-                                //wait ill try to code it first. i think it must be work now
-                                // in other edit text . yous told my that work
-                                //it works just email. the one that i send to you iwant to see
-                            }
+                        public int compare(Object paramTextBlock1, Object paramTextBlock2) {
+                            TextBlock paramTextBlocknew1 = (TextBlock) paramTextBlock1;
+                            TextBlock paramTextBlocknew2 = (TextBlock) paramTextBlock2;
+
+                            int i = paramTextBlocknew1.getBoundingBox().top - paramTextBlocknew2.getBoundingBox().top;
+                            int j = paramTextBlocknew2.getBoundingBox().left - paramTextBlocknew2.getBoundingBox().left;
+                            if (i != 0)
+                                return i;
+                            return j;
+                        }
+                    });
+                    StringBuilder localStringBuilder2 = new StringBuilder();
+                    Iterator localIterator = localArrayList.iterator();
+
+                    while (localIterator.hasNext()) {
+                        TextBlock localTextBlock = (TextBlock) localIterator.next();
+                        if ((localTextBlock == null) || (localTextBlock.getValue() == null))
+                            continue;
+                        localStringBuilder2.append(localTextBlock.getValue());
+                        localStringBuilder2.append(" ");
+                    }
+                    //localStringBuilder2 = all text was scanned  //how about with this code
+                    // it works when i wrote all the ()+ or need to split it? try
+                    //cant do with spaces 0914 231 12312) Much better the number is 123456789
+                    //cause the number here in Philippines is like this +639173314432 or 09173314432 or (+63)9173314432 wow alot or like this 0917 331 4432 lol
+                    String woords = localStringBuilder2.toString();
+                    String words[] = woords.split(" ");
+                    StringBuilder builder = new StringBuilder();
+                    for (String g : words) {
+                        if (g.contains("(" )||g.contains(")")||g.contains("+")) {
+                            builder.append(g);
+                            builder.append("\n");
+
                         }
                     }
+                    this.n.setText(builder.toString());
 
-                    if (textBlocks.size() == 0) {
-                        n.setText("Scan Failed: Found nothing to scan");
-                    } else
-                        {
+                    // SparseArray<TextBlock> textBlocks = detector.detect(frame);
 
 
-
-                    }
-
-                }
-                else
-                {
+                } else {
                     n.setText("Could not set up the detector!");
                 }
             }
@@ -158,13 +170,12 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         viewAll();
 
 
-
         // n.setText(value);
         /* Getting ImageURI from Gallery from Main Activity */
         Uri selectedImgUri = getIntent().getData();
         if (selectedImgUri != null) {
             Log.e("Gallery ImageURI", "" + selectedImgUri);
-            String[] selectedImgPath = { MediaStore.Images.Media.DATA };
+            String[] selectedImgPath = {MediaStore.Images.Media.DATA};
             Cursor cursor = getContentResolver().query(selectedImgUri,
                     selectedImgPath, null, null, null);
             cursor.moveToFirst();
@@ -217,9 +228,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 if (position == 0) {
                     // Disable the second item from Spinner
                     return false;
-                }
-                else
-                {
+                } else {
                     return true;
                 }
             }
@@ -274,17 +283,14 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         spin2.setAdapter(adap1);
 
 
-        n.addTextChangedListener(new TextWatcher()
-        {
+        n.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
-            {
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
-            {
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 n.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 l.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 pn.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
@@ -293,16 +299,13 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             }
 
             @Override
-            public void afterTextChanged(Editable editable)
-            {
+            public void afterTextChanged(Editable editable) {
 
             }
         });
 
 
-
     }
-
 
 
     private static final String EMAIL_PATTERN =
@@ -325,7 +328,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 // this not yet correct.
     // i capture and pick an image in gallery. different business cards and this code gets the email
     //so i knew that this code works on our problem.
-
 
 
     public void validator(String recognizeText) {
@@ -369,17 +371,14 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
     }
 
-        @Override
-    public void onClick(View view)
-    {
+    @Override
+    public void onClick(View view) {
         byte[] ne = imageViewToByte(iv1);
         boolean connected = false;
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED)
-        {
-            if(!emptyValidate(n, l, pn, e,p))
-            {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            if (!emptyValidate(n, l, pn, e, p)) {
 
                 String fname = n.getText().toString();
                 String lname = l.getText().toString();
@@ -403,21 +402,16 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
                 myDB.insertData(n.getText().toString(), l.getText().toString(), pn.getText().toString(),
                         e.getText().toString(), p.getText().toString(), spin1.getSelectedItem().toString(),
-                        spin2.getSelectedItem().toString(),status,imageViewToByte(iv1));
+                        spin2.getSelectedItem().toString(), status, imageViewToByte(iv1));
 
                 PostResponseAsyncTask task1 = new PostResponseAsyncTask(this,
-                        postData, new AsyncResponse()
-                {
+                        postData, new AsyncResponse() {
                     @Override
-                    public void processFinish(String s)
-                    {
-                        Log.d(TAG,s);
-                        if(s.contains("ErrorInsert"))
-                        {
+                    public void processFinish(String s) {
+                        Log.d(TAG, s);
+                        if (s.contains("ErrorInsert")) {
                             Toast.makeText(BScanner.this, "Failed to insert data", Toast.LENGTH_SHORT).show();
-                        }
-                        else
-                        {
+                        } else {
                             Toast.makeText(BScanner.this, "Data inserted", Toast.LENGTH_SHORT).show();
                             Intent in = new Intent(getApplicationContext(),
                                     Home.class);
@@ -426,39 +420,28 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                     }
                 });
                 task1.execute("http://172.16.50.127/ALT/contacts.php");
-            }
-
-            else
-            {
+            } else {
                 Toast.makeText(getApplicationContext(), "Fill out all the fields",
                         Toast.LENGTH_LONG).show();
             }
-        }
-        else
-
-
-        if (myDB.insertData(n.getText().toString(), l.getText().toString(), pn.getText().toString(),
+        } else if (myDB.insertData(n.getText().toString(), l.getText().toString(), pn.getText().toString(),
                 e.getText().toString(), p.getText().toString(), spin1.getSelectedItem().toString(),
-                spin2.getSelectedItem().toString(),status2,imageViewToByte(iv1)))
-        {
+                spin2.getSelectedItem().toString(), status2, imageViewToByte(iv1))) {
 
             Toast.makeText(BScanner.this, "Data Inserted", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(getApplicationContext(),Home.class);
+            Intent i = new Intent(getApplicationContext(), Home.class);
             startActivity(i);
-        }
-        else
-        {
+        } else {
             Toast.makeText(BScanner.this, "Data Not Inserted", Toast.LENGTH_SHORT).show();
         }
 
     }
 
 
-    private byte[] imageViewToByte(ImageView iv1)
-    {
-        Bitmap bitmap = ((BitmapDrawable)iv1.getDrawable()).getBitmap();
+    private byte[] imageViewToByte(ImageView iv1) {
+        Bitmap bitmap = ((BitmapDrawable) iv1.getDrawable()).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100, stream);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
         return byteArray;
 
@@ -466,28 +449,23 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == REQUEST_CODE_GALLERY)
-        {
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
+        if (requestCode == REQUEST_CODE_GALLERY) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
-                startActivityForResult(intent,REQUEST_CODE_GALLERY);
-            }
-            else
-            {
+                startActivityForResult(intent, REQUEST_CODE_GALLERY);
+            } else {
                 Toast.makeText(this, "You dont have permission to access the file", Toast.LENGTH_SHORT).show();
             }
             return;
         }
-        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_GALLERY && resultCode == RESULT_OK
                 && data != null && data.getData() != null) {
@@ -504,10 +482,11 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 e.printStackTrace();
             }
             iv1.setImageURI(data.getData());
-            Bitmap bm=((BitmapDrawable)iv1.getDrawable()).getBitmap();
+            Bitmap bm = ((BitmapDrawable) iv1.getDrawable()).getBitmap();
             saveImageFile(bm);
         }
     }
+
     public String saveImageFile(Bitmap bitmap) {
         FileOutputStream out = null;
         String filename = getFilename();
@@ -530,30 +509,25 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 + System.currentTimeMillis() + ".jpg");
         return uriSting;
     }
-    public void showMessage(String title, String message)
-    {
+
+    public void showMessage(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
         builder.setTitle(title);
         builder.setMessage(message);
         builder.show();
     }
-    public void viewAll()
-    {
-        final    List<String> names = myDB.getAllValues();
-        final    ArrayAdapter<String> da = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,names);
-        view.setOnClickListener(new View.OnClickListener()
-        {
+
+    public void viewAll() {
+        final List<String> names = myDB.getAllValues();
+        final ArrayAdapter<String> da = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, names);
+        view.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 Cursor cursor = myDB.getAllData();
-                if (cursor.getCount() == 0)
-                {
+                if (cursor.getCount() == 0) {
                     showMessage("Error", "NO DATA TO DISPLAY");
-                }
-                else
-                {
+                } else {
                     StringBuffer buffer = new StringBuffer();
                     while (cursor.moveToNext()) {
                         buffer.append("ID: " + cursor.getString(0) + "\n");
@@ -578,8 +552,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         });
     }
 
-    private boolean emptyValidate(EditText n, EditText l, EditText pn, EditText e, EditText p)
-    {
+    private boolean emptyValidate(EditText n, EditText l, EditText pn, EditText e, EditText p) {
         String fn = n.getText().toString();
         String ln = l.getText().toString();
         String pnum = pn.getText().toString();
@@ -589,13 +562,12 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-    {
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
     }
+
     @Override
-    public void onNothingSelected(AdapterView<?> parent)
-    {
+    public void onNothingSelected(AdapterView<?> parent) {
 
     }
 }
