@@ -128,6 +128,10 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                             for (Text element : line.getComponents()) {
                                 words =  element.getValue();
                                 validator(words);
+
+                                //wait ill try to code it first. i think it must be work now
+                                // in other edit text . yous told my that work
+                                //it works just email. the one that i send to you iwant to see
                             }
                         }
                     }
