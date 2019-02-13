@@ -109,7 +109,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
             } else {
                 if (detector.isOperational() && bitmap != null) {
-                    //  Frame frame = new Frame.Builder().setBitmap(bitmap).build();
 
                     Frame localFrame = new Frame.Builder().setBitmap(bitmap).build();
                     origTextBlocks = detector.detect(localFrame);
@@ -146,15 +145,27 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                     //cause the number here in Philippines is like this +639173314432 or 09173314432 or (+63)9173314432 wow alot or like this 0917 331 4432 lol
                     String woords = localStringBuilder2.toString();
                     String words[] = woords.split(" ");
+                    validator(woords);
                     StringBuilder builder = new StringBuilder();
-                    for (String g : words) {
-                        if (g.contains("(" )||g.contains(")")||g.contains("+")) {
-                            builder.append(g);
-                            builder.append("\n");
+                    StringBuilder builder1 = new StringBuilder();
+                    StringBuilder builder2 = new StringBuilder();
+                    for (String e : words) {
+                        if (e.contains("@")) {
+                            builder.append(e);
 
+                          //  this.e.setText(builder.toString());
                         }
                     }
-                    this.n.setText(builder.toString());
+                    for (String p : words) {
+                        if (p.contains("+63") && p.length() >= 11 && p.length() <= 15) {
+                            builder1.append(p);
+                            builder1.append("\n");
+                            this.pn.setText(builder1.toString());
+                        }
+                    }
+
+
+
 
                     // SparseArray<TextBlock> textBlocks = detector.detect(frame);
 
@@ -164,7 +175,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 }
             }
         }
-
 
         btnsave.setOnClickListener(this);
         viewAll();
@@ -317,27 +327,25 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                     "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
                     ")+";
 
-    //this pattern is almost correct
 
-    private static final String PHONE_PATTERN =
-            "^[89]\\d{7}$";
-// this not yet.
+
+    private static final String Company_PATTERN =
+            "(?:^|\\s)(?:Corporation|Corp|Inc|Incorporated|Company|LTD|PLLC|P\\.C)\\.?$";
+
 
     private static final String NAME_PATTERN =
-            "/^[a-z ,.'-]+$/i";
-// this not yet correct.
-    // i capture and pick an image in gallery. different business cards and this code gets the email
-    //so i knew that this code works on our problem.
+            "^[A-Z]'?[- a-zA-Z]( [a-zA-Z])*$";
+
 
 
     public void validator(String recognizeText) {
 
         Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
-        Pattern phonePattern = Pattern.compile(PHONE_PATTERN);
+        Pattern cpattern = Pattern.compile(Company_PATTERN);
         Pattern namePattern = Pattern.compile(NAME_PATTERN);
 
-        String possibleEmail, possiblePhone, possibleName;
-        possibleEmail = possiblePhone = possibleName = "";
+        String possibleEmail, possibleCompany, possibleName;
+        possibleEmail = possibleCompany = possibleName = "";
 
         Matcher matcher;
 
@@ -352,9 +360,9 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             }
 
             //try to determine is the word a phone number by running a pattern check.
-            matcher = phonePattern.matcher(word);
+            matcher = cpattern.matcher(word);
             if (matcher.find()) {
-                possiblePhone = possiblePhone + word + " ";
+                possibleCompany = possibleCompany + word + " ";
                 continue;
             }
 
@@ -366,8 +374,9 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             }
         }
         n.setText(possibleName);
-        e.setText(possibleEmail); //this code and pattern is correct so that the data is almost 80% real
-        p.setText(possiblePhone);
+        e.setText(possibleEmail);
+        l.setText(possibleCompany);
+
 
     }
 
