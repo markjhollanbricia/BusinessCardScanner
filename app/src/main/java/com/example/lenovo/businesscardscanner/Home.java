@@ -63,7 +63,7 @@ public class Home extends AppCompatActivity {
     EditText search;
     ArrayList<Model> mList;
     RecordListAdapter mAdapter = null;
-
+    ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -72,11 +72,11 @@ public class Home extends AppCompatActivity {
         camerPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storgePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         cam = (ImageButton)findViewById(R.id.imageButton2);
-
+        listView = (ListView) findViewById(R.id.listView);
         search = (EditText) findViewById(R.id.editText);
         myDB = new DBHandler(this);
 
-        final ListView listView = (ListView) findViewById(R.id.listView);
+
         mList = new ArrayList<>();
         mAdapter = new RecordListAdapter(this,R.layout.row,mList);
         listView.setAdapter(mAdapter);
@@ -102,12 +102,15 @@ public class Home extends AppCompatActivity {
                     return false;
                 }
             });
+            final String a = "";
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                    Intent intent = new Intent(getApplicationContext(), BScanner.class);
-                    intent.putExtra("Model",mList);
+
+                    Intent intent = new Intent(getApplicationContext(),BScanner.class);
+                    populateListViewAttendance(intent.getStringExtra("n"));
+
                     startActivity(intent);
 
                 }
@@ -115,7 +118,25 @@ public class Home extends AppCompatActivity {
 
 
     }
+    private void populateListViewAttendance(String neym)
+    {
+        ArrayList<String> theList = new ArrayList<>();
+        Cursor data = myDB.getEventAttendance(neym);
+        int numRows = data.getCount();
+        if(numRows == 0)
+        {
+            Toast.makeText(getApplicationContext(), "List Empty!", Toast.LENGTH_LONG).show();
+        }
+        else {
+            while(data.moveToNext())
+            {
+                theList.add(data.getString(1));
+            }
+        }
+        ListAdapter listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, theList);
+        listView.setAdapter(listAdapter);
 
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {

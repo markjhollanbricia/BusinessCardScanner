@@ -84,6 +84,13 @@ public class DBHandler extends SQLiteOpenHelper
 
         return cursor;
     }
+    public Cursor getEventAttendance(String name){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT *  FROM " + TABLE_NAME +
+                " WHERE " + COL_2 + " = '" + name + "'";
+        Cursor data = db.rawQuery(query, null);
+        return data;
+    }
     public List<String> getAllValues()
     {
         SQLiteDatabase db = this.getReadableDatabase();

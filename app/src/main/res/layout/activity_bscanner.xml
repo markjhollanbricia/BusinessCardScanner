@@ -217,9 +217,11 @@
                 android:layout_toRightOf="@+id/Icon1"
                 android:background="@color/editTextBG"
                 android:hint="*Email"
-                android:inputType="textEmailAddress"
+                android:inputType="textCapSentences|textMultiLine|textEmailAddress"
                 android:paddingLeft="20dp"
                 android:textSize="15sp"
+                android:maxLength="2000"
+                android:maxLines="4"
                 />
         </RelativeLayout>
 
@@ -310,7 +312,7 @@
 
                 />
 
-            <Spinner
+            <EditText
                 android:id="@+id/company"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -318,24 +320,13 @@
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/Icon4"
                 android:background="@color/editTextBG"
-                android:entries="@array/company_arrays"
+                android:hint="Company"
                 android:paddingLeft="20dp"
                 android:textSize="15sp" />
         </RelativeLayout>
 
 
-        <Button
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/save1"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="7dp"
-            android:layout_marginRight="30dp"
-            android:background="@color/colorPrimary"
-            android:fontFamily="sans-serif-medium"
-            android:text="View"
-            android:textColor="#ffffff" />
+
 
         <Button
             android:id="@+id/save1"
