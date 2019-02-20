@@ -52,76 +52,12 @@
 
             />
 
-        <RelativeLayout
-            android:id="@+id/relative2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/imageView1"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="30dp"
-            >
-
-            <ImageView
-                android:id="@+id/imgView_userIcon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@color/colorPrimary"
-                android:padding="8dp"
-                android:tint="@color/white"
-
-                />
-
-            <EditText
-                android:id="@+id/namescanner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignBottom="@+id/imgView_userIcon"
-                android:layout_toRightOf="@+id/imgView_userIcon"
-                android:background="@color/editTextBG"
-                android:inputType="text"
-
-                android:hint="*FirstName"
-                android:paddingLeft="20dp"
-                android:textSize="15sp"
-                />
-
-            <EditText
-                android:id="@+id/name2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:layout_alignParentTop="true"
-                android:layout_marginLeft="-24dp"
-                android:layout_marginTop="19dp"
-                android:layout_marginBottom="9dp"
-
-                android:background="@color/editTextBG"
-                android:hint="*FirstName"
-                android:inputType="text"
-                android:paddingLeft="20dp"
-                android:textSize="15sp"
-                android:visibility="invisible" />
-
-
-            <ImageView
-                android:id="@+id/imgView_userIcon2"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@color/colorPrimary"
-                android:padding="8dp"
-                android:tint="@color/white"
-
-                />
-
-        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/relative3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/relative2"
+            android:layout_below="@+id/imageView1"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="15dp"
@@ -138,14 +74,14 @@
                 />
 
             <EditText
-                android:id="@+id/lastname"
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/imgView_Icon"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/imgView_Icon"
                 android:background="@color/editTextBG"
-                android:hint="*Lastname"
+                android:hint="*Name"
                 android:paddingLeft="20dp"
                 android:inputType="text"
                 android:textSize="15sp" />
@@ -340,6 +276,20 @@
             android:fontFamily="sans-serif-medium"
             android:text="SAVE"
             android:textColor="#ffffff" />
+
+        <Button
+            android:id="@+id/save2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/save1"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="11dp"
+            android:layout_marginRight="30dp"
+            android:background="@color/colorPrimary"
+            android:fontFamily="sans-serif-medium"
+            android:text="Add to Contacts"
+            android:textColor="#ffffff" />
+
 
     </RelativeLayout>
 </ScrollView>

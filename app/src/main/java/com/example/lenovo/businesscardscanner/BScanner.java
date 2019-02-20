@@ -18,6 +18,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -78,7 +79,9 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     ImageView iv1;
     String v1;
     String v2;
+    TextView openContacts;
     SparseArray<TextBlock> origTextBlocks;
+
     final int REQUEST_CODE_GALLERY = 999;
     ListView listView;
     @Override
@@ -87,8 +90,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         setContentView(R.layout.activity_bscanner);
         myDB = new DBHandler(this);
 
-        n = (EditText) findViewById(R.id.namescanner);
-        l = (EditText) findViewById(R.id.lastname);
+        n = (EditText) findViewById(R.id.name);
         listView = (ListView) findViewById(R.id.listView);
         // recognizer = new TextRecognizer.Builder(getApplicationContext()).build();
         pn = (EditText) findViewById(R.id.cpnum);
@@ -100,7 +102,9 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         view = (Button) findViewById(R.id.view);
         iv1 = (ImageView) findViewById(R.id.iv1);
         detector = new TextRecognizer.Builder(getApplicationContext()).build();
+        openContacts = (Button) findViewById(R.id.save2);
         Intent intent = getIntent();
+
         String cropedImgUri = intent.getStringExtra("data");
         if (cropedImgUri != null) {
             Uri resultUri = Uri.parse(cropedImgUri);
@@ -158,18 +162,17 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                         if (e.contains("@")) {
                             builder.append(e);
 
-                          //  this.e.setText(builder.toString());
+                            //  this.e.setText(builder.toString());
                         }
                     }
                     for (String p : words) {
                         if (p.contains("+63") && p.length() >= 11 && p.length() <= 15) {
                             builder1.append(p);
+
                             builder1.append("\n");
                             this.pn.setText(builder1.toString());
                         }
                     }
-
-
 
 
                     // SparseArray<TextBlock> textBlocks = detector.detect(frame);
@@ -179,6 +182,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                     n.setText("Could not set up the detector!");
                 }
             }
+
         }
 
         btnsave.setOnClickListener(this);
@@ -211,8 +215,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         }
 
 
-
-
         String[] Country = new String[]{
                 "Country",
                 "Malaysia",
@@ -225,9 +227,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 "India"
 
         };
-
-
-
 
 
         List<String> list1 = new ArrayList<>(Arrays.asList(Country));
@@ -269,7 +268,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 n.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                l.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 pn.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 e.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 p.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
@@ -284,27 +282,26 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         String x = z.getStringExtra("n");
         n.setText(x);
 
-
-
+        openContacts.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                addToContacts();
+            }
+        });
     }
 
-
     private static final String EMAIL_PATTERN =
-            "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
-                    "\\@" +
-                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
-                    "(" +
-                    "\\." +
-                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" + ")+" ;
-
-
+            "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])" ;
 
     private static final String Company_PATTERN =
             "(?:^|\\s)(?:Corporation|Corp|Inc|Incorporated|Company|LTD|PLLC|P\\.C)\\.?$";
 
 
     private static final String NAME_PATTERN =
-            "([A-Za-z]+)";
+            "^[A-Z]{3}$";
+
+   // private static final String Phone_PATTERN =
+            //"(?:^|\\D)(\\d{3})[)\\-. ]*?(\\d{3})[\\-. ]*?(\\d{4})(?:$|\\D)";
 
 
 
@@ -315,10 +312,13 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
         Pattern cpattern = Pattern.compile(Company_PATTERN);
         Pattern namePattern = Pattern.compile(NAME_PATTERN);
+//        Pattern phonePattern = Pattern.compile(Phone_PATTERN);
 
 
-        String possibleEmail, possibleCompany, possibleName;
-        possibleEmail = possibleCompany = possibleName = "";
+        String possibleEmail, possibleCompany, possibleName, possiblePhone;
+
+
+        possibleEmail = possibleCompany = possiblePhone = possibleName = "";
 
         Matcher matcher;
 
@@ -345,9 +345,15 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 possibleName = possibleName + word + " ";
                 continue;
             }
+        //    matcher = phonePattern.matcher(word);
+        //    if (matcher.find()) {
+         //       possiblePhone = possiblePhone + word + " ";
+             //   continue;
+         //   }
 
 
         }
+        pn.setText(possiblePhone);
         n.setText(possibleName);
         e.setText(possibleEmail);
         c.setText(possibleCompany);
@@ -557,4 +563,37 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+    private void addToContacts(){
+
+        // Creates a new Intent to insert a contact
+        Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
+        // Sets the MIME type to match the Contacts Provider
+        intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+
+        //Checks if we have the name, email and phone number...
+        if(n.getText().length() > 0 && ( pn.getText().length() > 0 || e.getText().length() > 0 )){
+            //Adds the name...
+            intent.putExtra(ContactsContract.Intents.Insert.NAME, n.getText());
+
+            //Adds the email...
+            intent.putExtra(ContactsContract.Intents.Insert.EMAIL, e.getText());
+            //Adds the email as Work Email
+            //intent .putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK);
+
+            //Adds the phone number...
+            intent.putExtra(ContactsContract.Intents.Insert.PHONE, pn.getText());
+            //Adds the phone number as Work Phone
+          //  intent.putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK);
+
+            //starting the activity...
+            startActivity(intent);
+        }else{
+            Toast.makeText(getApplicationContext(), "No information to add to contacts!", Toast.LENGTH_LONG).show();
+        }
+
+
+    }
+
+
 }
+
