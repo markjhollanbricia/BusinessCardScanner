@@ -1,7 +1,6 @@
 package com.example.lenovo.businesscardscanner;
 
 
-
 public class Model
 {
 
@@ -18,6 +17,7 @@ public class Model
         this.image = image;
         this.status = status;
     }
+
 
     public int getId() {
         return id;
@@ -57,4 +57,6 @@ public class Model
     public void setStatus(String status) {
         this.status = status;
     }
+
+
 }

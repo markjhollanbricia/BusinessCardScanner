@@ -79,9 +79,10 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     ImageView iv1;
     String v1;
     String v2;
+    String a;
     TextView openContacts;
     SparseArray<TextBlock> origTextBlocks;
-
+    String pmary;
     final int REQUEST_CODE_GALLERY = 999;
     ListView listView;
     @Override
@@ -92,7 +93,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
         n = (EditText) findViewById(R.id.name);
         listView = (ListView) findViewById(R.id.listView);
-        // recognizer = new TextRecognizer.Builder(getApplicationContext()).build();
         pn = (EditText) findViewById(R.id.cpnum);
         e = (EditText) findViewById(R.id.email);
         p = (EditText) findViewById(R.id.position);
@@ -103,7 +103,26 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         iv1 = (ImageView) findViewById(R.id.iv1);
         detector = new TextRecognizer.Builder(getApplicationContext()).build();
         openContacts = (Button) findViewById(R.id.save2);
+
+
+
+
         Intent intent = getIntent();
+
+        a = intent.getStringExtra("name");
+        String b = intent.getStringExtra("phonenumber");
+        String c1 = intent.getStringExtra("email");
+        String d = intent.getStringExtra("position");
+        String e1 = intent.getStringExtra("company");
+
+        n.setText(a);
+        pn.setText(b);
+        c.setText(c1);
+        p.setText(d);
+        e.setText(e1);
+
+
+
 
         String cropedImgUri = intent.getStringExtra("data");
         if (cropedImgUri != null) {
@@ -186,6 +205,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         }
 
         btnsave.setOnClickListener(this);
+
 
 
         e.setSingleLine(false);
@@ -278,9 +298,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
             }
         });
-        Intent z = getIntent();
-        String x = z.getStringExtra("n");
-        n.setText(x);
+
 
         openContacts.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -296,9 +314,8 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     private static final String Company_PATTERN =
             "(?:^|\\s)(?:Corporation|Corp|Inc|Incorporated|Company|LTD|PLLC|P\\.C)\\.?$";
 
-
     private static final String NAME_PATTERN =
-            "^[A-Z]{3}$";
+            "^[A-Z][15]$";
 
    // private static final String Phone_PATTERN =
             //"(?:^|\\D)(\\d{3})[)\\-. ]*?(\\d{3})[\\-. ]*?(\\d{4})(?:$|\\D)";
@@ -312,7 +329,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
         Pattern cpattern = Pattern.compile(Company_PATTERN);
         Pattern namePattern = Pattern.compile(NAME_PATTERN);
-//        Pattern phonePattern = Pattern.compile(Phone_PATTERN);
+//      Pattern phonePattern = Pattern.compile(Phone_PATTERN);
 
 
         String possibleEmail, possibleCompany, possibleName, possiblePhone;
@@ -323,7 +340,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         Matcher matcher;
 
         String[] words = recognizeText.split("\\r?\\n");
-
+        String[] lines = recognizeText.split("\\r\\n");
         for (String word : words) {
             //try to determine is the word an email by running a pattern check.
             matcher = emailPattern.matcher(word);
@@ -339,21 +356,18 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 continue;
             }
 
-            //try to determine is the word a name by running a pattern check.
-            matcher = namePattern.matcher(word);
-            if (matcher.find()) {
-                possibleName = possibleName + word + " ";
-                continue;
+
+                matcher = namePattern.matcher(word);
+                if (matcher.find()) {
+                    possibleName = possibleName + word + " ";
+                    continue;
+
             }
-        //    matcher = phonePattern.matcher(word);
-        //    if (matcher.find()) {
-         //       possiblePhone = possiblePhone + word + " ";
-             //   continue;
-         //   }
-
-
         }
-        pn.setText(possiblePhone);
+
+
+
+      //  pn.setText(possiblePhone);
         n.setText(possibleName);
         e.setText(possibleEmail);
         c.setText(possibleCompany);
@@ -369,10 +383,9 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
-            if (!emptyValidate(n, l, pn, e, p)) {
 
+            if (!emptyValidate(n,  pn, e, p)) {
                 String fname = n.getText().toString();
-                String lname = l.getText().toString();
                 String phone = pn.getText().toString();
                 String email = e.getText().toString();
                 String position = p.getText().toString();
@@ -383,7 +396,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
                 HashMap<String, String> postData = new HashMap<>();
                 postData.put("txtFname", fname);
-                postData.put("txtLname", lname);
                 postData.put("txtPhone", phone);
                 postData.put("txtEmail", email);
                 postData.put("txtPosition", position);
@@ -391,7 +403,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 postData.put("txtCountry", country);
                 postData.put("txtStatus", status1);
 
-                myDB.insertData(n.getText().toString(), l.getText().toString(), pn.getText().toString(),
+                myDB.insertData(n.getText().toString(), pn.getText().toString(),
                         e.getText().toString(), p.getText().toString(), c.getText().toString(),
                         spin2.getSelectedItem().toString(), status, imageViewToByte(iv1));
 
@@ -415,7 +427,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 Toast.makeText(getApplicationContext(), "Fill out all the fields",
                         Toast.LENGTH_LONG).show();
             }
-        } else if (myDB.insertData(n.getText().toString(), l.getText().toString(), pn.getText().toString(),
+        } else if (myDB.insertData(n.getText().toString(), pn.getText().toString(),
                 e.getText().toString(), p.getText().toString(), c.getText().toString(),
                 spin2.getSelectedItem().toString(), status2, imageViewToByte(iv1))) {
 
@@ -508,50 +520,16 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         builder.setMessage(message);
         builder.show();
     }
-/*
-    public void viewAll() {
-        final List<String> names = myDB.getAllValues();
-        final ArrayAdapter<String> da = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, names);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Cursor cursor = myDB.getAllData();
-                if (cursor.getCount() == 0) {
-                    showMessage("Error", "NO DATA TO DISPLAY");
-                } else {
-                    StringBuffer buffer = new StringBuffer();
-                    while (cursor.moveToNext()) {
-                        buffer.append("ID: " + cursor.getString(0) + "\n");
-                        buffer.append("Firstname: " + cursor.getString(1) + "\n");
-                        buffer.append("Lastname: " + cursor.getString(2) + "\n");
-                        buffer.append("ContactNo: " + cursor.getString(3) + "\n");
-                        buffer.append("Email: " + cursor.getString(4) + "\n");
-                        buffer.append("Position: " + cursor.getString(5) + "\n");
-                        buffer.append("Company: " + cursor.getString(6) + "\n");
-                        buffer.append("Country: " + cursor.getString(7) + "\n");
-                        buffer.append("Status: " + "Sync is OFF" + "\n\n");
-                        String name = cursor.getString(1);
-                        names.add(name);
-                    }
-                    Toast.makeText(BScanner.this, "you selected view", Toast.LENGTH_SHORT).show();
-                    showMessage("Showing " + cursor.getCount() + "record/s", buffer.toString());
 
-                }
 
-            }
-
-        });
-    }
-    */
-
-    private boolean emptyValidate(EditText n, EditText l, EditText pn, EditText e, EditText p) {
+    private boolean emptyValidate(EditText n, EditText pn, EditText e, EditText p) {
         String fn = n.getText().toString();
-        String ln = l.getText().toString();
+
         String pnum = pn.getText().toString();
         String email = e.getText().toString();
         String pos = p.getText().toString();
 
-        return (fn.isEmpty() && ln.isEmpty() && pnum.isEmpty() && email.isEmpty() && pos.isEmpty());
+        return (fn.isEmpty() && pnum.isEmpty() && email.isEmpty() && pos.isEmpty());
     }
 
     @Override

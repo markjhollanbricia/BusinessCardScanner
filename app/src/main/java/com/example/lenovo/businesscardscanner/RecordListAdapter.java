@@ -46,6 +46,7 @@ public class RecordListAdapter extends BaseAdapter {
     {
         return i;
     }
+
 private class ViewHolder
     {
         ImageView imageView;

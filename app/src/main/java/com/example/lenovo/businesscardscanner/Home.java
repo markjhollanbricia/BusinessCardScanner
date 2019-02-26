@@ -2,16 +2,10 @@ package com.example.lenovo.businesscardscanner;
 
 import android.Manifest;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.Environment;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,33 +13,23 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
-import com.google.android.gms.vision.Frame;
+
 import com.google.android.gms.vision.text.TextBlock;
-import com.google.android.gms.vision.text.TextRecognizer;
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageActivity;
 import com.theartofdev.edmodo.cropper.CropImageView;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.List;
 
 public class Home extends AppCompatActivity {
 
@@ -57,6 +41,8 @@ public class Home extends AppCompatActivity {
     Uri imgUri;
     String camerPermission[];
     String storgePermission[];
+    String n;
+
     ImageButton cam;
 
     DBHandler myDB;
@@ -64,6 +50,8 @@ public class Home extends AppCompatActivity {
     ArrayList<Model> mList;
     RecordListAdapter mAdapter = null;
     ListView listView;
+    TextView msg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -74,7 +62,9 @@ public class Home extends AppCompatActivity {
         cam = (ImageButton)findViewById(R.id.imageButton2);
         listView = (ListView) findViewById(R.id.listView);
         search = (EditText) findViewById(R.id.editText);
+        msg = (TextView) findViewById(R.id.textView3);
         myDB = new DBHandler(this);
+
 
 
         mList = new ArrayList<>();
@@ -83,18 +73,26 @@ public class Home extends AppCompatActivity {
 
         Cursor cursor = myDB.getAllData();
         mList.clear();
-        while(cursor.moveToNext()) {
-            final int id = cursor.getInt(0);
-            String name = cursor.getString(1);
-            String company = cursor.getString(6);
-            byte[] image = cursor.getBlob(8);
-            String status = cursor.getString(9);
 
-            mList.add(new Model(id, name, company, image, status));
-        }
             mAdapter.notifyDataSetChanged();
             if (mList.size() == 0) {
                 Toast.makeText(this, "No record found", Toast.LENGTH_SHORT).show();
+                msg.setVisibility(View.VISIBLE);
+
+            }
+            else
+
+            {
+                while(cursor.moveToNext()) {
+                    final int id = cursor.getInt(0);
+                    String name = cursor.getString(1);
+                    String company = cursor.getString(5);
+                    byte[] image = cursor.getBlob(7);
+                    String status = cursor.getString(8);
+
+                    mList.add(new Model(id, name, company, image, status));
+
+                }
             }
             listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
@@ -102,41 +100,27 @@ public class Home extends AppCompatActivity {
                     return false;
                 }
             });
-            final String a = "";
+
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-
-
-                    Intent intent = new Intent(getApplicationContext(),BScanner.class);
-                    populateListViewAttendance(intent.getStringExtra("n"));
-
+                    Cursor res = myDB.getAllData();
+                    //res.moveToFirst();
+                    res.moveToPosition(position);
+                    Intent intent = new Intent(Home.this, BScanner.class);
+                    intent.putExtra("id",res.getInt(0));
+                    intent.putExtra("name", res.getString(1 ));
+                    intent.putExtra("phonenumber", res.getString(3));
+                    intent.putExtra("email", res.getString(4));
+                    intent.putExtra("position", res.getString(5));
+                    intent.putExtra("company", res.getString(6));
                     startActivity(intent);
-
                 }
             });
 
 
     }
-    private void populateListViewAttendance(String neym)
-    {
-        ArrayList<String> theList = new ArrayList<>();
-        Cursor data = myDB.getEventAttendance(neym);
-        int numRows = data.getCount();
-        if(numRows == 0)
-        {
-            Toast.makeText(getApplicationContext(), "List Empty!", Toast.LENGTH_LONG).show();
-        }
-        else {
-            while(data.moveToNext())
-            {
-                theList.add(data.getString(1));
-            }
-        }
-        ListAdapter listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, theList);
-        listView.setAdapter(listAdapter);
 
-    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {

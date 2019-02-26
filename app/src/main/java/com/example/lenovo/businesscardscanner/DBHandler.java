@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
-import android.graphics.Picture;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -19,15 +18,14 @@ public class DBHandler extends SQLiteOpenHelper
     public static final int DATABASE_VERSION = 1;
     public static final String TABLE_NAME = "tblholder";
     public static final String COL_1 = " contactid";
-    public static final String COL_2 = " Firstname";
-    public static final String COL_3 = " Lastname";
-    public static final String COL_4 = " Phonenumber";
-    public static final String COL_5 = " Email";
-    public static final String COL_6 = " Position";
-    public static final String COL_7 = " Company";
-    public static final String COL_8 = " Country";
-    public static final String COL_9 = " Picture";
-    public static final String COL_10 = " Status";
+    public static final String COL_2 = " Name";
+    public static final String COL_3 = " Phonenumber";
+    public static final String COL_4 = " Email";
+    public static final String COL_5 = " Position";
+    public static final String COL_6 = " Company";
+    public static final String COL_7 = " Country";
+    public static final String COL_8 = " Picture";
+    public static final String COL_9 = " Status";
     public DBHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -38,8 +36,7 @@ public class DBHandler extends SQLiteOpenHelper
                 + COL_2 + " TEXT," + COL_3 + " TEXT,"
                 + COL_4 + " TEXT," + COL_5 + " TEXT,"
                 + COL_6 + " TEXT," + COL_7 + " TEXT,"
-                + COL_8 + " TEXT," + COL_9 + " blob,"
-                + COL_10 + " TEXT)");
+                + COL_8 + " blob," + COL_9 + " TEXT)");
     }
 
     @Override
@@ -47,19 +44,18 @@ public class DBHandler extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
-    public boolean insertData ( String Firstname, String Lastname, String Phonenumber, String Email, String Position, String Company, String Country, String Status, byte[] image){
+    public boolean insertData ( String Name, String Phonenumber, String Email, String Position, String Company, String Country, String Status, byte[] image){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value = new ContentValues();
 
-        value.put(COL_2, Firstname);
-        value.put(COL_3, Lastname);
-        value.put(COL_4, Phonenumber);
-        value.put(COL_5, Email);
-        value.put(COL_6, Position);
-        value.put(COL_7, Company);
-        value.put(COL_8, Country);
-        value.put(COL_9, image);
-        value.put(COL_10, Status);
+        value.put(COL_2, Name);
+        value.put(COL_3, Phonenumber);
+        value.put(COL_4, Email);
+        value.put(COL_5, Position);
+        value.put(COL_6, Company);
+        value.put(COL_7, Country);
+        value.put(COL_8, image);
+        value.put(COL_9, Status);
 
 
         long result = db.insertOrThrow(TABLE_NAME, null, value);
@@ -71,6 +67,24 @@ public class DBHandler extends SQLiteOpenHelper
             return false;
         }
     }
+
+
+
+
+    public boolean UpdateData(String ID,String Name, String Pnum, String  Email, String Pos, String Company , String Country) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COL_1, ID);
+        cv.put(COL_2, Name);
+        cv.put(COL_3, Pnum);
+        cv.put(COL_4, Email);
+        cv.put(COL_5, Pos);
+        cv.put(COL_6, Company);
+        cv.put(COL_7, Country);
+        db.update(TABLE_NAME, cv, "ID = ?", new String[]{ID});
+        return true;
+    }
+
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -94,7 +108,7 @@ public class DBHandler extends SQLiteOpenHelper
     public List<String> getAllValues()
     {
         SQLiteDatabase db = this.getReadableDatabase();
-        List<String> list = new ArrayList<String>();
+        List<String> lists = new ArrayList<String>();
         String query = "Select * from " + TABLE_NAME;
         Cursor cursor = db.rawQuery(query,null);
 
@@ -102,13 +116,13 @@ public class DBHandler extends SQLiteOpenHelper
         {
             do
             {
-                list.add(cursor.getString(1));
+                lists.add(cursor.getString(1));
             }
             while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
-        return list;
+        return lists;
     }
     public Cursor Search(String text)
     {
