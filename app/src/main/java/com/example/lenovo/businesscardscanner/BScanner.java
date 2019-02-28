@@ -69,20 +69,18 @@ import java.util.regex.Pattern;
 
 public class BScanner extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     final String TAG = "Contacts";
-    EditText n, l, pn, e, p , c;
+    EditText n, pn, e, p , c;
     Button btnsave, view;
-    Spinner spin1, spin2;
+    Spinner spin2;
     String status2 = "Sync is OFF";
     String status = "Sync is ON";
     DBHandler myDB;
     TextRecognizer detector;
     ImageView iv1;
     String v1;
-    String v2;
     String a;
     TextView openContacts;
     SparseArray<TextBlock> origTextBlocks;
-    String pmary;
     final int REQUEST_CODE_GALLERY = 999;
     ListView listView;
     @Override
@@ -90,7 +88,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bscanner);
         myDB = new DBHandler(this);
-
         n = (EditText) findViewById(R.id.name);
         listView = (ListView) findViewById(R.id.listView);
         pn = (EditText) findViewById(R.id.cpnum);
@@ -103,27 +100,64 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         iv1 = (ImageView) findViewById(R.id.iv1);
         detector = new TextRecognizer.Builder(getApplicationContext()).build();
         openContacts = (Button) findViewById(R.id.save2);
+        btnsave.setOnClickListener(this);
+
+
+        GalleryImage();
+        cbCountry();
+        getEditData();
+        TextDetectorCropImage();
+        CaptureImage();
+        openContacts();
+
+        e.setSingleLine(false);
+        e.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
 
 
 
+    }
+
+    public void openContacts()
+    {
+        openContacts.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                addToContacts();
+            }
+        });
+    }
+
+    public void CaptureImage()
+    {
+        /* Getting ImageBitmap from Camera from Main Activity */
+        Intent intent_camera = getIntent();
+        Bitmap camera_img_bitmap = (Bitmap) intent_camera
+                .getParcelableExtra("BitmapImage");
+        if (camera_img_bitmap != null) {
+            iv1.setImageBitmap(camera_img_bitmap);
+        }
+
+    }
+    public void GalleryImage()
+    {
+        Uri selectedImgUri = getIntent().getData();
+        if (selectedImgUri != null) {
+            Log.e("Gallery ImageURI", "" + selectedImgUri);
+            String[] selectedImgPath = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContentResolver().query(selectedImgUri,
+                    selectedImgPath, null, null, null);
+            cursor.moveToFirst();
+
+            int indexCol = cursor.getColumnIndex(selectedImgPath[0]);
+            String imgPath = cursor.getString(indexCol);
+            cursor.close();
+            iv1.setImageBitmap(BitmapFactory.decodeFile(imgPath));
+        }
+    }
+    public void TextDetectorCropImage()
+    {
 
         Intent intent = getIntent();
-
-        a = intent.getStringExtra("name");
-        String b = intent.getStringExtra("phonenumber");
-        String c1 = intent.getStringExtra("email");
-        String d = intent.getStringExtra("position");
-        String e1 = intent.getStringExtra("company");
-
-        n.setText(a);
-        pn.setText(b);
-        c.setText(c1);
-        p.setText(d);
-        e.setText(e1);
-
-
-
-
         String cropedImgUri = intent.getStringExtra("data");
         if (cropedImgUri != null) {
             Uri resultUri = Uri.parse(cropedImgUri);
@@ -203,37 +237,25 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             }
 
         }
+    }
+    public void getEditData()
+    {
+        Intent intent = getIntent();
+        a = intent.getStringExtra("name");
+        String b = intent.getStringExtra("phonenumber");
+        String c1 = intent.getStringExtra("email");
+        String d = intent.getStringExtra("position");
+        String e1 = intent.getStringExtra("company");
 
-        btnsave.setOnClickListener(this);
+        n.setText(a);
+        pn.setText(b);
+        c.setText(c1);
+        p.setText(d);
+        e.setText(e1);
+    }
 
-
-
-        e.setSingleLine(false);
-        e.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-        // n.setText(value);
-        /* Getting ImageURI from Gallery from Main Activity */
-        Uri selectedImgUri = getIntent().getData();
-        if (selectedImgUri != null) {
-            Log.e("Gallery ImageURI", "" + selectedImgUri);
-            String[] selectedImgPath = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getContentResolver().query(selectedImgUri,
-                    selectedImgPath, null, null, null);
-            cursor.moveToFirst();
-
-            int indexCol = cursor.getColumnIndex(selectedImgPath[0]);
-            String imgPath = cursor.getString(indexCol);
-            cursor.close();
-            iv1.setImageBitmap(BitmapFactory.decodeFile(imgPath));
-        }
-
-        /* Getting ImageBitmap from Camera from Main Activity */
-        Intent intent_camera = getIntent();
-        Bitmap camera_img_bitmap = (Bitmap) intent_camera
-                .getParcelableExtra("BitmapImage");
-        if (camera_img_bitmap != null) {
-            iv1.setImageBitmap(camera_img_bitmap);
-        }
-
+    public void cbCountry()
+    {
 
         String[] Country = new String[]{
                 "Country",
@@ -247,8 +269,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 "India"
 
         };
-
-
         List<String> list1 = new ArrayList<>(Arrays.asList(Country));
         ArrayAdapter<String> adap1 = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Country) {
             @Override
@@ -277,36 +297,17 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         };
         adap1.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spin2.setAdapter(adap1);
-
-
-        n.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                n.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                pn.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                e.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                p.setHintTextColor(getResources().getColor(R.color.colorPrimaryDark));
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-
-        openContacts.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                addToContacts();
-            }
-        });
     }
+
+
+
+
+
+
+
+
+
+
 
     private static final String EMAIL_PATTERN =
             "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])" ;

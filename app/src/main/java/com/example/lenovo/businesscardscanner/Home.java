@@ -1,7 +1,10 @@
 package com.example.lenovo.businesscardscanner;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -10,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,7 +41,6 @@ public class Home extends AppCompatActivity {
     private static final int STORGE_PERMISION_CODE = 400;
     private static final int IMG_PICK_GALLARY_CODE = 1000;
     private static final int IMG_PICK_CAMERA_CODE = 1001;
-    TextBlock textBlock;
     Uri imgUri;
     String camerPermission[];
     String storgePermission[];
@@ -52,6 +55,7 @@ public class Home extends AppCompatActivity {
     ListView listView;
     TextView msg;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -64,61 +68,82 @@ public class Home extends AppCompatActivity {
         search = (EditText) findViewById(R.id.editText);
         msg = (TextView) findViewById(R.id.textView3);
         myDB = new DBHandler(this);
-
-
-
         mList = new ArrayList<>();
         mAdapter = new RecordListAdapter(this,R.layout.row,mList);
+        ShowData();
+        Notifier();
+        LongClick();
+        Click();
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void Click()
+    {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Cursor res = myDB.getAllData();
+                //res.moveToFirst();
+                res.moveToPosition(position);
+                Intent intent = new Intent(Home.this, BScanner.class);
+                intent.putExtra("id",res.getInt(0));
+                intent.putExtra("name", res.getString(1 ));
+                intent.putExtra("phonenumber", res.getString(3));
+                intent.putExtra("email", res.getString(4));
+                intent.putExtra("position", res.getString(5));
+                intent.putExtra("company", res.getString(6));
+                startActivity(intent);
+            }
+        });
+    }
+    public void LongClick()
+    {
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                openDialog();
+                return true;
+            }
+        });
+    }
+    public void Notifier()
+    {
         listView.setAdapter(mAdapter);
 
+
+        if (mList.size() == 0) {
+            Toast.makeText(this, "No record found", Toast.LENGTH_SHORT).show();
+            msg.setVisibility(View.VISIBLE);
+
+        }
+        mAdapter.notifyDataSetChanged();
+
+    }
+    public void ShowData()
+    {
         Cursor cursor = myDB.getAllData();
         mList.clear();
-
-            mAdapter.notifyDataSetChanged();
-            if (mList.size() == 0) {
-                Toast.makeText(this, "No record found", Toast.LENGTH_SHORT).show();
-                msg.setVisibility(View.VISIBLE);
-
-            }
-            else
-
-            {
-                while(cursor.moveToNext()) {
-                    final int id = cursor.getInt(0);
-                    String name = cursor.getString(1);
-                    String company = cursor.getString(5);
-                    byte[] image = cursor.getBlob(7);
-                    String status = cursor.getString(8);
-
-                    mList.add(new Model(id, name, company, image, status));
-
-                }
-            }
-            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    return false;
-                }
-            });
-
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                    Cursor res = myDB.getAllData();
-                    //res.moveToFirst();
-                    res.moveToPosition(position);
-                    Intent intent = new Intent(Home.this, BScanner.class);
-                    intent.putExtra("id",res.getInt(0));
-                    intent.putExtra("name", res.getString(1 ));
-                    intent.putExtra("phonenumber", res.getString(3));
-                    intent.putExtra("email", res.getString(4));
-                    intent.putExtra("position", res.getString(5));
-                    intent.putExtra("company", res.getString(6));
-                    startActivity(intent);
-                }
-            });
-
-
+        while(cursor.moveToNext()) {
+            final int id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            String company = cursor.getString(5);
+            byte[] image = cursor.getBlob(7);
+            String status = cursor.getString(8);
+            mList.add(new Model(id, name, company, image, status));
+        }
     }
 
     @Override
@@ -251,6 +276,12 @@ public class Home extends AppCompatActivity {
                 break;
 
         }
+    }
+
+    public void openDialog()
+    {
+        com.example.lenovo.businesscardscanner.Dialog Dialog = new com.example.lenovo.businesscardscanner.Dialog();
+        Dialog.show(getSupportFragmentManager(),"example dialog");
     }
     private void pickCamera() {
         ContentValues contentValues = new ContentValues();

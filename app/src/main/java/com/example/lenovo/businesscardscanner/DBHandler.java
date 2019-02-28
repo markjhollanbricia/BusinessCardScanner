@@ -44,6 +44,12 @@ public class DBHandler extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
+    public void delete(String id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.delete(TABLE_NAME, COL_1 + "=?", new String[]{id});
+        db.close();
+    }
     public boolean insertData ( String Name, String Phonenumber, String Email, String Position, String Company, String Country, String Status, byte[] image){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value = new ContentValues();

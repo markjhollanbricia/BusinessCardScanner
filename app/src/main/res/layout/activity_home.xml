@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".Home">
+    tools:context=".Home"
+    android:id="@+id/pullToRefresh">
 
 <ScrollView
     android:layout_width="match_parent"
@@ -103,11 +104,11 @@
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:layout_marginEnd="8dp"
+                android:text="Click here to Scan ---------->"
                 android:visibility="invisible"
-                tools:layout_editor_absoluteX="68dp"
-                tools:layout_editor_absoluteY="458dp"
-                tools:text="Click here to Scan ---------->" />
+                app:layout_constraintEnd_toStartOf="@+id/imageButton2"
+                tools:layout_editor_absoluteY="457dp" />
 
         </android.support.constraint.ConstraintLayout>
 
