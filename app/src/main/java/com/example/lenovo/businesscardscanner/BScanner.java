@@ -201,16 +201,12 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                         localStringBuilder2.append(localTextBlock.getValue());
                         localStringBuilder2.append(" ");
                     }
-                    //localStringBuilder2 = all text was scanned  //how about with this code
-                    // it works when i wrote all the ()+ or need to split it? try
-                    //cant do with spaces 0914 231 12312) Much better the number is 123456789
-                    //cause the number here in Philippines is like this +639173314432 or 09173314432 or (+63)9173314432 wow alot or like this 0917 331 4432 lol
                     String woords = localStringBuilder2.toString();
                     String words[] = woords.split(" ");
                     validator(woords);
                     StringBuilder builder = new StringBuilder();
                     StringBuilder builder1 = new StringBuilder();
-                    StringBuilder builder2 = new StringBuilder();
+
                     for (String e : words) {
                         if (e.contains("@")) {
                             builder.append(e);
@@ -227,11 +223,9 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                         }
                     }
 
-
-                    // SparseArray<TextBlock> textBlocks = detector.detect(frame);
-
-
-                } else {
+                }
+                else
+                    {
                     n.setText("Could not set up the detector!");
                 }
             }

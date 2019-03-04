@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,7 +22,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -77,18 +80,6 @@ public class Home extends AppCompatActivity {
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     public void Click()
     {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -114,8 +105,8 @@ public class Home extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                openDialog();
-                return true;
+               showDialogListView(null);
+                return false;
             }
         });
     }
@@ -280,8 +271,32 @@ public class Home extends AppCompatActivity {
 
     public void openDialog()
     {
-        com.example.lenovo.businesscardscanner.Dialog Dialog = new com.example.lenovo.businesscardscanner.Dialog();
-        Dialog.show(getSupportFragmentManager(),"example dialog");
+        ListView listview = null;
+        listview = new ListView(this);
+        String[] items = {"Edit","Delete"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.list_item,R.id.txtitem,items );
+        listview.setAdapter(adapter);
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ViewGroup vg = (ViewGroup) view;
+                TextView txt = (TextView) vg.findViewById(R.id.txtitem);
+                Toast.makeText(Home.this,txt.getText().toString(),Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    public void showDialogListView(View view)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
+        builder.setCancelable(true);
+        builder.setPositiveButton("OK",null);
+
+        builder.setView(listView);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
     private void pickCamera() {
         ContentValues contentValues = new ContentValues();
