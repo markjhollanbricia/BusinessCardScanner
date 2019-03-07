@@ -24,8 +24,8 @@ public class DBHandler extends SQLiteOpenHelper
     public static final String COL_5 = " Position";
     public static final String COL_6 = " Company";
     public static final String COL_7 = " Country";
-    public static final String COL_8 = " Picture";
-    public static final String COL_9 = " Status";
+
+    public static final String COL_8 = " Status";
     public DBHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -36,7 +36,7 @@ public class DBHandler extends SQLiteOpenHelper
                 + COL_2 + " TEXT," + COL_3 + " TEXT,"
                 + COL_4 + " TEXT," + COL_5 + " TEXT,"
                 + COL_6 + " TEXT," + COL_7 + " TEXT,"
-                + COL_8 + " blob," + COL_9 + " TEXT)");
+                + COL_8 + " blob)");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class DBHandler extends SQLiteOpenHelper
         db.delete(TABLE_NAME, COL_1 + "=?", new String[]{id});
         db.close();
     }
-    public boolean insertData ( String Name, String Phonenumber, String Email, String Position, String Company, String Country, String Status, byte[] image){
+    public boolean insertData ( String Name, String Phonenumber, String Email, String Position, String Company, String Country, String Status){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value = new ContentValues();
 
@@ -60,8 +60,8 @@ public class DBHandler extends SQLiteOpenHelper
         value.put(COL_5, Position);
         value.put(COL_6, Company);
         value.put(COL_7, Country);
-        value.put(COL_8, image);
-        value.put(COL_9, Status);
+
+        value.put(COL_8, Status);
 
 
         long result = db.insertOrThrow(TABLE_NAME, null, value);

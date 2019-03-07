@@ -1,6 +1,5 @@
 package com.example.lenovo.businesscardscanner;
 
-
 public class Model
 {
 
@@ -10,14 +9,13 @@ public class Model
     private byte[] image;
     private String status;
 
-    public Model(int id, String name, String company, byte[] image,String status) {
+    public Model(int id, String name, String company,String status) {
         this.id = id;
         this.name = name;
         this.company = company;
-        this.image = image;
+      //  this.image = image;
         this.status = status;
     }
-
 
     public int getId() {
         return id;
@@ -57,6 +55,4 @@ public class Model
     public void setStatus(String status) {
         this.status = status;
     }
-
-
 }

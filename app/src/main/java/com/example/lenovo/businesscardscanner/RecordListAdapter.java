@@ -13,15 +13,13 @@ import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public class RecordListAdapter extends BaseAdapter {
 
     private Context context;
     private int layout;
     private ArrayList<Model> recordList;
-    List<Model> modellist;
+
     public RecordListAdapter(Context context, int layout, ArrayList<Model> recordList)
     {
         this.context = context;
@@ -46,8 +44,7 @@ public class RecordListAdapter extends BaseAdapter {
     {
         return i;
     }
-
-private class ViewHolder
+    private class ViewHolder
     {
         ImageView imageView;
         TextView txtName,txtCompany,txtStatus;
@@ -66,7 +63,7 @@ private class ViewHolder
             row = inflater.inflate(layout,null);
             holder.txtName = row.findViewById(R.id.txtName);
             holder.txtCompany = row.findViewById(R.id.txtComp);
-            holder.imageView = row.findViewById(R.id.imgView_Icon);
+          //  holder.imageView = row.findViewById(R.id.imgView_Icon);
             holder.txtStatus = row.findViewById(R.id.txtStatus);
             row.setTag(holder);
 
@@ -79,30 +76,9 @@ private class ViewHolder
         holder.txtName.setText(model.getName());
         holder.txtCompany.setText(model.getCompany());
         holder.txtStatus.setText(model.getStatus());
-        byte[] recordImage = model.getImage();
-        Bitmap bitmap = BitmapFactory.decodeByteArray(recordImage,0,recordImage.length);
-        holder.imageView.setImageBitmap(bitmap);
+      //  byte[] recordImage = model.getImage();
+      //  Bitmap bitmap = BitmapFactory.decodeByteArray(recordImage,0,recordImage.length);
+       // holder.imageView.setImageBitmap(bitmap);
         return row;
-    }
-    public void filter(String charText)
-    {
-        charText = charText.toLowerCase(Locale.getDefault());
-        modellist.clear();
-
-        if(charText.length() == 0)
-        {
-            modellist.addAll(recordList);
-        }
-        else
-        {
-            for(Model model : recordList)
-            {
-                if(model.getName().toLowerCase(Locale.getDefault()).contains(charText))
-                {
-                    modellist.add(model);
-                }
-            }
-        }
-        notifyDataSetChanged();
     }
 }

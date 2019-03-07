@@ -101,16 +101,6 @@
                 app:layout_constraintVertical_bias="1.0"
                 app:srcCompat="@drawable/ic_gal" />
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="Click here to Scan ---------->"
-                android:visibility="invisible"
-                app:layout_constraintEnd_toStartOf="@+id/imageButton2"
-                tools:layout_editor_absoluteY="457dp" />
-
         </android.support.constraint.ConstraintLayout>
 
     </TableLayout>

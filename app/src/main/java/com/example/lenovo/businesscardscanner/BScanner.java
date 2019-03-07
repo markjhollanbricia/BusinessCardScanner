@@ -1,6 +1,9 @@
 package com.example.lenovo.businesscardscanner;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,6 +24,7 @@ import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -57,6 +61,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -83,6 +88,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     SparseArray<TextBlock> origTextBlocks;
     final int REQUEST_CODE_GALLERY = 999;
     ListView listView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -292,17 +298,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         adap1.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spin2.setAdapter(adap1);
     }
-
-
-
-
-
-
-
-
-
-
-
     private static final String EMAIL_PATTERN =
             "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])" ;
 
@@ -320,7 +315,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
 
     public void validator(String recognizeText) {
-
         Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
         Pattern cpattern = Pattern.compile(Company_PATTERN);
         Pattern namePattern = Pattern.compile(NAME_PATTERN);
@@ -343,19 +337,19 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 possibleEmail = possibleEmail + word + " ";
                 continue;
             }
-
-            //try to determine is the word a phone number by running a pattern check.
             matcher = cpattern.matcher(word);
             if (matcher.find()) {
                 possibleCompany = possibleCompany + word + " ";
                 continue;
             }
 
-
-                matcher = namePattern.matcher(word);
-                if (matcher.find()) {
-                    possibleName = possibleName + word + " ";
-                    continue;
+        }
+        for (String line : lines)
+        {
+            matcher = namePattern.matcher(line);
+            if (matcher.find()) {
+                possibleName = possibleName + line + " ";
+                continue;
 
             }
         }
@@ -373,8 +367,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void onClick(View view)
     {
-        byte[] ne = imageViewToByte(iv1);
-        boolean connected = false;
+
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
@@ -400,7 +393,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
                 myDB.insertData(n.getText().toString(), pn.getText().toString(),
                         e.getText().toString(), p.getText().toString(), c.getText().toString(),
-                        spin2.getSelectedItem().toString(), status, imageViewToByte(iv1));
+                        spin2.getSelectedItem().toString(), status);
 
                 PostResponseAsyncTask task1 = new PostResponseAsyncTask(this,
                         postData, new AsyncResponse() {
@@ -424,7 +417,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             }
         } else if (myDB.insertData(n.getText().toString(), pn.getText().toString(),
                 e.getText().toString(), p.getText().toString(), c.getText().toString(),
-                spin2.getSelectedItem().toString(), status2, imageViewToByte(iv1))) {
+                spin2.getSelectedItem().toString(), status2)) {
 
             Toast.makeText(BScanner.this, "Data Inserted", Toast.LENGTH_SHORT).show();
             Intent i = new Intent(getApplicationContext(), Home.class);
@@ -433,7 +426,11 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             Toast.makeText(BScanner.this, "Data Not Inserted", Toast.LENGTH_SHORT).show();
         }
 
+
     }
+
+
+
 
 
     private byte[] imageViewToByte(ImageView iv1) {
@@ -508,13 +505,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         return uriSting;
     }
 
-    public void showMessage(String title, String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(message);
-        builder.show();
-    }
+
 
 
     private boolean emptyValidate(EditText n, EditText pn, EditText e, EditText p) {
