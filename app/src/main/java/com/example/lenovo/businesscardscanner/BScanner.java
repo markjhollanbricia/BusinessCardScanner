@@ -369,17 +369,8 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     public void onClick(View view)
     {
 
-        String name = n.getText().toString().trim();
-        String phn = pn.getText().toString().trim();
-        String em = e.getText().toString().trim();
-        if((name.isEmpty() || name.length() == 0 || name.equals("") || name == null) &&
-                (phn.isEmpty() || phn.length() == 0 || phn.equals("") || phn == null) &&
-                (em.isEmpty() || em.length() == 0 || em.equals("") || em == null)) {
-            Toast.makeText(BScanner.this, "Please Input all fields", Toast.LENGTH_SHORT).show();
 
-        }
-        else
-        {
+
             ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                     connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
@@ -435,7 +426,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 Toast.makeText(BScanner.this, "Data Not Inserted", Toast.LENGTH_SHORT).show();
             }
         }
-        }
+
 
     private byte[] imageViewToByte(ImageView iv1) {
         Bitmap bitmap = ((BitmapDrawable) iv1.getDrawable()).getBitmap();
