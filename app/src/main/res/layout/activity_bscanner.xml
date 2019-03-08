@@ -82,8 +82,8 @@
                 android:layout_toRightOf="@+id/imgView_Icon"
                 android:background="@color/editTextBG"
                 android:hint="*Name"
+                android:inputType="textPersonName"
                 android:paddingLeft="20dp"
-                android:inputType="text"
                 android:textSize="15sp" />
 
         </RelativeLayout>
@@ -113,14 +113,14 @@
                 android:id="@+id/cpnum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
                 android:layout_alignBottom="@+id/Icon2"
+                android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/Icon2"
                 android:background="@color/editTextBG"
                 android:hint="*Phone Number"
+                android:inputType="none"
                 android:paddingLeft="20dp"
-                android:textSize="15sp"
-                />
+                android:textSize="15sp" />
         </RelativeLayout>
 
         <RelativeLayout

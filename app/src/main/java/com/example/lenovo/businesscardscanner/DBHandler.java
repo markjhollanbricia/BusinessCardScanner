@@ -36,7 +36,7 @@ public class DBHandler extends SQLiteOpenHelper
                 + COL_2 + " TEXT," + COL_3 + " TEXT,"
                 + COL_4 + " TEXT," + COL_5 + " TEXT,"
                 + COL_6 + " TEXT," + COL_7 + " TEXT,"
-                + COL_8 + " blob)");
+                + COL_8 + " TEXT)");
     }
 
     @Override
@@ -60,7 +60,6 @@ public class DBHandler extends SQLiteOpenHelper
         value.put(COL_5, Position);
         value.put(COL_6, Company);
         value.put(COL_7, Country);
-
         value.put(COL_8, Status);
 
 

@@ -160,8 +160,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             iv1.setImageBitmap(BitmapFactory.decodeFile(imgPath));
         }
     }
-    public void TextDetectorCropImage()
-    {
+    public void TextDetectorCropImage() {
 
         Intent intent = getIntent();
         String cropedImgUri = intent.getStringExtra("data");
@@ -177,67 +176,56 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
             } else {
                 if (detector.isOperational() && bitmap != null) {
+                    Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+                    SparseArray<TextBlock> textBlocks = detector.detect(frame);
+                    String blocks = "";
 
-                    Frame localFrame = new Frame.Builder().setBitmap(bitmap).build();
-                    origTextBlocks = detector.detect(localFrame);
-                    ArrayList localArrayList = new ArrayList();
-                    for (int i = 0; i < origTextBlocks.size(); i++)
-                        localArrayList.add(this.origTextBlocks.valueAt(i));
-                    Collections.sort(localArrayList, new Comparator() {
+                    String lines = "";
+                    String words = "";
 
+                    for (int index = 0; index < textBlocks.size(); index++) {
+                        //extract scanned text blocks here
 
-                        public int compare(Object paramTextBlock1, Object paramTextBlock2) {
-                            TextBlock paramTextBlocknew1 = (TextBlock) paramTextBlock1;
-                            TextBlock paramTextBlocknew2 = (TextBlock) paramTextBlock2;
+                        TextBlock tBlock = textBlocks.valueAt(index);
+                        TextBlock tBlockk = textBlocks.valueAt(0);
+                        blocks = blocks + tBlock.getValue() + "\n" + "\n";
 
-                            int i = paramTextBlocknew1.getBoundingBox().top - paramTextBlocknew2.getBoundingBox().top;
-                            int j = paramTextBlocknew2.getBoundingBox().left - paramTextBlocknew2.getBoundingBox().left;
-                            if (i != 0)
-                                return i;
-                            return j;
+                        validator(blocks);
+                        for (Text line : tBlockk.getComponents()) {
+                            //extract scanned text lines here
+                            lines =  line.getValue() + "\n";
+
+                            for (Text element : line.getComponents()) {
+                                //extract scanned text words here
+                                words = words + element.getValue() ;
+                            }
                         }
-                    });
-                    StringBuilder localStringBuilder2 = new StringBuilder();
-                    Iterator localIterator = localArrayList.iterator();
+                        for (Text line : tBlockk.getComponents()) {
+                            //extract scanned text lines here
+                            lines =  line.getValue() + "\n";
+                            for (Text element : line.getComponents()) {
+                                //extract scanned text words here
+                                words = words + element.getValue() ;
 
-                    while (localIterator.hasNext()) {
-                        TextBlock localTextBlock = (TextBlock) localIterator.next();
-                        if ((localTextBlock == null) || (localTextBlock.getValue() == null))
-                            continue;
-                        localStringBuilder2.append(localTextBlock.getValue());
-                        localStringBuilder2.append(" ");
-                    }
-                    String woords = localStringBuilder2.toString();
-                    String words[] = woords.split(" ");
-                    validator(woords);
-                    StringBuilder builder = new StringBuilder();
-                    StringBuilder builder1 = new StringBuilder();
-
-                    for (String e : words) {
-                        if (e.contains("@")) {
-                            builder.append(e);
-
-                            //  this.e.setText(builder.toString());
+                            }
                         }
                     }
-                    for (String p : words) {
-                        if (p.contains("+63") && p.length() >= 11 && p.length() <= 15) {
-                            builder1.append(p);
+                    if (textBlocks.size() == 0) {
+                        n.setText("Scan Failed: Found nothing to scan");
+                    } else {
 
-                            builder1.append("\n");
-                            this.pn.setText(builder1.toString());
-                        }
+
+                        n.setText(n.getText() + lines + "\n");
+
+
                     }
-
-                }
-                else
-                    {
+                } else {
                     n.setText("Could not set up the detector!");
                 }
             }
-
         }
     }
+
     public void getEditData()
     {
         Intent intent = getIntent();
@@ -305,12 +293,13 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             "(?:^|\\s)(?:Corporation|Corp|Inc|Incorporated|Company|LTD|PLLC|P\\.C)\\.?$";
 
     private static final String NAME_PATTERN =
-            "^[A-Z][15]$";
+            "^[a-zA-Z][.][15]$";
 
-   // private static final String Phone_PATTERN =
-            //"(?:^|\\D)(\\d{3})[)\\-. ]*?(\\d{3})[\\-. ]*?(\\d{4})(?:$|\\D)";
+    private static final String Phone_PATTERN =
+            "(?:^|\\D)(\\d{3})[)\\-. ]*?(\\d{3})[\\-. ]*?(\\d{4})(?:$|\\D)";
 
-
+    private static final String Position_PATTERN =
+            "(?:^|\\s)(?:Manager|Account Manager|IT Analyst|CONSULTANT|Executive|Consultant|Editor|SalesP\\.C)\\.?$";
 
 
 
@@ -318,20 +307,20 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
         Pattern cpattern = Pattern.compile(Company_PATTERN);
         Pattern namePattern = Pattern.compile(NAME_PATTERN);
-//      Pattern phonePattern = Pattern.compile(Phone_PATTERN);
+        Pattern phonePattern = Pattern.compile(Phone_PATTERN);
+        Pattern posPattern = Pattern.compile(Position_PATTERN);
+
+        String possibleEmail, possibleCompany, possibleName, possiblePhone, possiblePosition;
 
 
-        String possibleEmail, possibleCompany, possibleName, possiblePhone;
-
-
-        possibleEmail = possibleCompany = possiblePhone = possibleName = "";
+        possibleEmail = possibleCompany = possiblePhone = possiblePosition = possibleName = "";
 
         Matcher matcher;
 
         String[] words = recognizeText.split("\\r?\\n");
-        String[] lines = recognizeText.split("\\r\\n");
+
         for (String word : words) {
-            //try to determine is the word an email by running a pattern check.
+
             matcher = emailPattern.matcher(word);
             if (matcher.find()) {
                 possibleEmail = possibleEmail + word + " ";
@@ -342,24 +331,36 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 possibleCompany = possibleCompany + word + " ";
                 continue;
             }
-
-        }
-        for (String line : lines)
-        {
-            matcher = namePattern.matcher(line);
+            matcher = namePattern.matcher(word);
             if (matcher.find()) {
-                possibleName = possibleName + line + " ";
+                possibleName = possibleName + word + " ";
                 continue;
 
             }
+            matcher = phonePattern.matcher(word);
+            if (matcher.find()) {
+                possiblePhone = possiblePhone + word + " ";
+                continue;
+
+            }
+
+            matcher = posPattern.matcher(word);
+            if (matcher.find()) {
+                possiblePosition = possiblePosition + word + " ";
+                continue;
+
+            }
+
         }
 
 
 
-      //  pn.setText(possiblePhone);
-        n.setText(possibleName);
+
+      pn.setText(possiblePhone);
+    //  n.setText(possibleName);
         e.setText(possibleEmail);
         c.setText(possibleCompany);
+        p.setText(possiblePosition);
 
 
     }
@@ -368,11 +369,22 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     public void onClick(View view)
     {
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+        String name = n.getText().toString().trim();
+        String phn = pn.getText().toString().trim();
+        String em = e.getText().toString().trim();
+        if((name.isEmpty() || name.length() == 0 || name.equals("") || name == null) &&
+                (phn.isEmpty() || phn.length() == 0 || phn.equals("") || phn == null) &&
+                (em.isEmpty() || em.length() == 0 || em.equals("") || em == null)) {
+            Toast.makeText(BScanner.this, "Please Input all fields", Toast.LENGTH_SHORT).show();
 
-            if (!emptyValidate(n,  pn, e, p)) {
+        }
+        else
+        {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                    connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+
+
                 String fname = n.getText().toString();
                 String phone = pn.getText().toString();
                 String email = e.getText().toString();
@@ -393,7 +405,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
                 myDB.insertData(n.getText().toString(), pn.getText().toString(),
                         e.getText().toString(), p.getText().toString(), c.getText().toString(),
-                        spin2.getSelectedItem().toString(), status);
+                        spin2.getSelectedItem().toString(), status2);
 
                 PostResponseAsyncTask task1 = new PostResponseAsyncTask(this,
                         postData, new AsyncResponse() {
@@ -411,27 +423,19 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                     }
                 });
                 task1.execute("http://172.16.50.127/ALT/contacts.php");
+
+            } else if (myDB.insertData(n.getText().toString(), pn.getText().toString(),
+                    e.getText().toString(), p.getText().toString(), c.getText().toString(),
+                    spin2.getSelectedItem().toString(), status2)) {
+
+                Toast.makeText(BScanner.this, "Data Inserted", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(getApplicationContext(), Home.class);
+                startActivity(i);
             } else {
-                Toast.makeText(getApplicationContext(), "Fill out all the fields",
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(BScanner.this, "Data Not Inserted", Toast.LENGTH_SHORT).show();
             }
-        } else if (myDB.insertData(n.getText().toString(), pn.getText().toString(),
-                e.getText().toString(), p.getText().toString(), c.getText().toString(),
-                spin2.getSelectedItem().toString(), status2)) {
-
-            Toast.makeText(BScanner.this, "Data Inserted", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(getApplicationContext(), Home.class);
-            startActivity(i);
-        } else {
-            Toast.makeText(BScanner.this, "Data Not Inserted", Toast.LENGTH_SHORT).show();
         }
-
-
-    }
-
-
-
-
+        }
 
     private byte[] imageViewToByte(ImageView iv1) {
         Bitmap bitmap = ((BitmapDrawable) iv1.getDrawable()).getBitmap();
@@ -508,15 +512,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
 
 
-    private boolean emptyValidate(EditText n, EditText pn, EditText e, EditText p) {
-        String fn = n.getText().toString();
 
-        String pnum = pn.getText().toString();
-        String email = e.getText().toString();
-        String pos = p.getText().toString();
-
-        return (fn.isEmpty() && pnum.isEmpty() && email.isEmpty() && pos.isEmpty());
-    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
