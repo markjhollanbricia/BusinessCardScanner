@@ -26,7 +26,6 @@
 
             <EditText
                 android:drawableStart="@drawable/search"
-
                 android:id="@+id/editText"
                 android:layout_width="309dp"
                 android:layout_height="46dp"
