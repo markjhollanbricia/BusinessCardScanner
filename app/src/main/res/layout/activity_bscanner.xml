@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BScanner">
+    tools:context=".BScanner"
+    android:background="@color/bg">
 
 
     <RelativeLayout
@@ -16,7 +17,7 @@
             android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
+            android:background="@color/bg"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -63,16 +64,12 @@
             android:layout_marginTop="15dp"
             >
 
-            <ImageView
-                android:id="@+id/imgView_Icon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@color/colorPrimary"
-                android:padding="8dp"
-                android:tint="@color/white"
 
-                />
-
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
             <EditText
                 android:id="@+id/name"
                 android:layout_width="match_parent"
@@ -80,12 +77,14 @@
                 android:layout_alignBottom="@+id/imgView_Icon"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/imgView_Icon"
-                android:background="@color/editTextBG"
+                android:textColorHint="@color/white"
+                android:ems="10"
+                android:textColor="@color/white"
                 android:hint="*Name"
                 android:inputType="textPersonName"
                 android:paddingLeft="20dp"
                 android:textSize="15sp" />
-
+            </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -98,29 +97,26 @@
             android:layout_marginTop="15dp"
             >
 
-            <ImageView
-                android:id="@+id/Icon2"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@color/colorPrimary"
-                android:padding="8dp"
-                android:tint="@color/white"
-
-                />
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
 
             <EditText
-
+                android:textColorHint="@color/white"
                 android:id="@+id/cpnum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/Icon2"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/Icon2"
-                android:background="@color/editTextBG"
+                android:textColor="@color/white"
                 android:hint="*Phone Number"
                 android:inputType="none"
                 android:paddingLeft="20dp"
                 android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -133,25 +129,22 @@
             android:layout_marginTop="15dp"
             >
 
-            <ImageView
-                android:id="@+id/Icon1"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@color/colorPrimary"
-                android:padding="8dp"
-                android:tint="@color/white"
 
-                />
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
 
             <EditText
-
+                android:textColorHint="@color/white"
                 android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignBottom="@+id/Icon1"
                 android:layout_toRightOf="@+id/Icon1"
-                android:background="@color/editTextBG"
+                android:textColor="@color/white"
                 android:hint="*Email"
                 android:inputType="textCapSentences|textMultiLine|textEmailAddress"
                 android:paddingLeft="20dp"
@@ -159,6 +152,7 @@
                 android:maxLength="2000"
                 android:maxLines="4"
                 />
+            </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -171,28 +165,25 @@
             android:layout_marginTop="15dp"
             >
 
-            <ImageView
-                android:id="@+id/Icon3"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@color/colorPrimary"
-                android:padding="8dp"
-                android:tint="@color/white"
 
-                />
-
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
             <EditText
                 android:id="@+id/position"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/Icon3"
+                android:textColorHint="@color/white"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/Icon3"
-                android:background="@color/editTextBG"
+                android:textColor="@color/white"
+                android:ems="10"
                 android:hint="*Position"
                 android:paddingLeft="20dp"
                 android:inputType="text"
                 android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
 
 
@@ -206,27 +197,24 @@
             android:layout_marginTop="15dp"
             >
 
-            <ImageView
-                android:id="@+id/Icon5"
-                android:layout_width="40dp"
-                android:layout_height="39dp"
-                android:background="@color/colorPrimary"
-                android:padding="8dp"
-
-                android:tint="@color/white" />
-
-            <Spinner
-                android:id="@+id/country"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/Icon5"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/Icon5"
-                android:background="@color/editTextBG"
-                android:entries="@array/country_arrays"
-                android:paddingLeft="20dp"
-                android:textSize="15sp" />
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
 
+                <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Country"
+                    android:textColorHint="@color/white"
+                    android:id="@+id/autoTextView"
+                    android:paddingLeft="20dp"
+                    android:textSize="15sp"
+                    android:textColor="@color/white"
+                    android:ems="10"
+                    />
+            </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
         <RelativeLayout
             android:id="@+id/relative7"
@@ -238,27 +226,24 @@
             android:layout_marginTop="15dp"
             >
 
-            <ImageView
-                android:id="@+id/Icon4"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@color/colorPrimary"
-                android:padding="8dp"
-                android:tint="@color/white"
 
-                />
-
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
             <EditText
                 android:id="@+id/company"
+                android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/Icon4"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/Icon4"
-                android:background="@color/editTextBG"
                 android:hint="Company"
+                android:ems="10"
+                android:textColorHint="@color/white"
                 android:paddingLeft="20dp"
                 android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
 
 

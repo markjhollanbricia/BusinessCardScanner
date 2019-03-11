@@ -5,9 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white"
+    android:background="@color/bg"
     tools:context=".Home"
-    android:id="@+id/pullToRefresh">
+    android:id="@+id/pullToRefresh"
+    android:theme="@style/AppTheme" >
 
 <ScrollView
     android:layout_width="match_parent"
@@ -21,8 +22,11 @@
             android:layout_width="match_parent"
             android:layout_height="502dp">
 
+
+
             <EditText
                 android:drawableStart="@drawable/search"
+
                 android:id="@+id/editText"
                 android:layout_width="309dp"
                 android:layout_height="46dp"
@@ -35,6 +39,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:ems="10"
+                android:textColorHint="@color/white"
                 android:hint="SEARCH"
                 android:inputType="textPersonName"
                 android:textAllCaps="false"

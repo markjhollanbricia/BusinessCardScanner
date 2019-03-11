@@ -8,4 +8,5 @@
     <color name="transparent">#000000</color>
     <color name="textColor">#6e6e6e</color>
     <color name="required">#151ab4</color>
+    <color name="bg">#000759</color>
 </resources>

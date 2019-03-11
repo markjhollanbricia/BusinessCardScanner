@@ -35,6 +35,7 @@ dependencies {
     implementation files('libs/GenAsync.jar')
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support:cardview-v7:28.0.0'
-
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.basgeekball:awesome-validation:2.0'
 
 }

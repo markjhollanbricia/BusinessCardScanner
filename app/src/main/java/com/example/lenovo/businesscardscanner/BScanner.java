@@ -39,6 +39,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -48,6 +49,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.basgeekball.awesomevalidation.AwesomeValidation;
+import com.basgeekball.awesomevalidation.ValidationStyle;
+import com.basgeekball.awesomevalidation.utility.RegexTemplate;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
@@ -85,9 +89,11 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     String v1;
     String a;
     TextView openContacts;
-    SparseArray<TextBlock> origTextBlocks;
     final int REQUEST_CODE_GALLERY = 999;
     ListView listView;
+    private AutoCompleteTextView autoTV;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,17 +106,19 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         e = (EditText) findViewById(R.id.email);
         p = (EditText) findViewById(R.id.position);
         c = (EditText) findViewById(R.id.company);
-        spin2 = (Spinner) findViewById(R.id.country);
+       autoTV = (AutoCompleteTextView) findViewById(R.id.autoTextView);
         btnsave = (Button) findViewById(R.id.save1);
         view = (Button) findViewById(R.id.view);
         iv1 = (ImageView) findViewById(R.id.iv1);
         detector = new TextRecognizer.Builder(getApplicationContext()).build();
         openContacts = (Button) findViewById(R.id.save2);
         btnsave.setOnClickListener(this);
-
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>
+                (this, android.R.layout.simple_dropdown_item_1line, Country);
+        autoTV.setThreshold(1); //will start working from first character
+        autoTV.setAdapter(adapter);
 
         GalleryImage();
-        cbCountry();
         getEditData();
         TextDetectorCropImage();
         CaptureImage();
@@ -179,9 +187,11 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                     Frame frame = new Frame.Builder().setBitmap(bitmap).build();
                     SparseArray<TextBlock> textBlocks = detector.detect(frame);
                     String blocks = "";
-
                     String lines = "";
                     String words = "";
+                    String blockss = "";
+                    String liness = "";
+                    String wordss= "";
 
                     for (int index = 0; index < textBlocks.size(); index++) {
                         //extract scanned text blocks here
@@ -198,6 +208,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                             for (Text element : line.getComponents()) {
                                 //extract scanned text words here
                                 words = words + element.getValue() ;
+
                             }
                         }
                         for (Text line : tBlockk.getComponents()) {
@@ -209,6 +220,27 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
                             }
                         }
+                    }
+                    //    -----------------------------------
+                    for (int index = 0; index < textBlocks.size(); index++) {
+                        //extract scanned text blocks here
+
+                        TextBlock tBlock = textBlocks.valueAt(index);
+
+                        blockss = blockss + tBlock.getValue() + "\n" + "\n";
+
+
+                        for (Text line : tBlock.getComponents()) {
+                            //extract scanned text lines here
+                            liness =  line.getValue() + "\n";
+
+                            for (Text element : line.getComponents()) {
+                                //extract scanned text words here
+                                wordss =  element.getValue() ;
+                                validators(wordss);
+                            }
+                        }
+
                     }
                     if (textBlocks.size() == 0) {
                         n.setText("Scan Failed: Found nothing to scan");
@@ -242,8 +274,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         e.setText(e1);
     }
 
-    public void cbCountry()
-    {
 
         String[] Country = new String[]{
                 "Country",
@@ -254,38 +284,11 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 "Italy",
                 "Singapore",
                 "New Zealand",
-                "India"
+                "India",
+                "Philippines"
 
         };
-        List<String> list1 = new ArrayList<>(Arrays.asList(Country));
-        ArrayAdapter<String> adap1 = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, Country) {
-            @Override
-            public boolean isEnabled(int position) {
-                if (position == 0) {
 
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-
-            @Override
-            public View getDropDownView(int position, View convertView,
-                                        ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                TextView tv = (TextView) view;
-                if (position == 0) {
-                    // Set the disable item text color
-                    tv.setTextColor(Color.GRAY);
-                } else {
-                    tv.setTextColor(Color.BLACK);
-                }
-                return view;
-            }
-        };
-        adap1.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        spin2.setAdapter(adap1);
-    }
     private static final String EMAIL_PATTERN =
             "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])" ;
 
@@ -301,7 +304,8 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     private static final String Position_PATTERN =
             "(?:^|\\s)(?:Manager|Account Manager|IT Analyst|CONSULTANT|Executive|Consultant|Editor|SalesP\\.C)\\.?$";
 
-
+    private static final String Country_PATTERN =
+            "(?:^|\\s)(?:Phil|Philippines|Philippines,|Phil.|Executive|Consultant|Editor|SalesP\\.C)\\.?$";
 
     public void validator(String recognizeText) {
         Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
@@ -309,11 +313,12 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         Pattern namePattern = Pattern.compile(NAME_PATTERN);
         Pattern phonePattern = Pattern.compile(Phone_PATTERN);
         Pattern posPattern = Pattern.compile(Position_PATTERN);
+        Pattern counPattern = Pattern.compile(Country_PATTERN);
 
-        String possibleEmail, possibleCompany, possibleName, possiblePhone, possiblePosition;
+        String possibleEmail, possibleCompany, possibleName, possiblePhone, possiblePosition, possibleCountry;
 
 
-        possibleEmail = possibleCompany = possiblePhone = possiblePosition = possibleName = "";
+        possibleEmail = possibleCompany = possiblePhone = possiblePosition = possibleName = possibleCountry = "";
 
         Matcher matcher;
 
@@ -351,6 +356,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
             }
 
+
         }
 
 
@@ -358,6 +364,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
       pn.setText(possiblePhone);
     //  n.setText(possibleName);
+
         e.setText(possibleEmail);
         c.setText(possibleCompany);
         p.setText(possiblePosition);
@@ -365,9 +372,43 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
     }
 
+    public void validators(String recognizeText) {
+
+        Pattern counPattern = Pattern.compile(Country_PATTERN);
+
+        String possibleCountry;
+
+
+       possibleCountry = "";
+
+        Matcher matcher;
+
+        String[] words = recognizeText.split("\\r?\\n");
+
+        for (String word : words) {
+
+            matcher = counPattern.matcher(word);
+            if (matcher.find()) {
+                possibleCountry = possibleCountry + word + " ";
+                continue;
+
+            }
+
+        }
+
+
+
+
+
+        autoTV.setText(possibleCountry);
+
+
+
+    }
+
     @Override
-    public void onClick(View view)
-    {
+    public void onClick(View view) {
+
 
 
 
@@ -381,7 +422,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 String email = e.getText().toString();
                 String position = p.getText().toString();
                 String company = c.getText().toString();
-                String country = spin2.getSelectedItem().toString();
+                String country = autoTV.getText().toString();
                 String status1 = status;
 
 
@@ -396,7 +437,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
                 myDB.insertData(n.getText().toString(), pn.getText().toString(),
                         e.getText().toString(), p.getText().toString(), c.getText().toString(),
-                        spin2.getSelectedItem().toString(), status2);
+                        autoTV.getText().toString(), status1);
 
                 PostResponseAsyncTask task1 = new PostResponseAsyncTask(this,
                         postData, new AsyncResponse() {
@@ -417,7 +458,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
             } else if (myDB.insertData(n.getText().toString(), pn.getText().toString(),
                     e.getText().toString(), p.getText().toString(), c.getText().toString(),
-                    spin2.getSelectedItem().toString(), status2)) {
+                    autoTV.getText().toString(), status2)) {
 
                 Toast.makeText(BScanner.this, "Data Inserted", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(getApplicationContext(), Home.class);
@@ -426,6 +467,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 Toast.makeText(BScanner.this, "Data Not Inserted", Toast.LENGTH_SHORT).show();
             }
         }
+
 
 
     private byte[] imageViewToByte(ImageView iv1) {
