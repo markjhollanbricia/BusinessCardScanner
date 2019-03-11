@@ -117,13 +117,11 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 (this, android.R.layout.simple_dropdown_item_1line, Country);
         autoTV.setThreshold(1); //will start working from first character
         autoTV.setAdapter(adapter);
-
         GalleryImage();
         getEditData();
         TextDetectorCropImage();
         CaptureImage();
         openContacts();
-
         e.setSingleLine(false);
         e.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
 
