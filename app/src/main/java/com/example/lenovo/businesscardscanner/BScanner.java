@@ -476,7 +476,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
         return byteArray;
-
     }
 
     @Override
