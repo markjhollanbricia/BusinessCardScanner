@@ -48,13 +48,15 @@ public class Home extends AppCompatActivity {
     String camerPermission[];
     String storgePermission[];
     String n;
+
     ImageButton cam;
+
     DBHandler myDB;
     EditText search;
     ArrayList<Model> mList;
     RecordListAdapter mAdapter = null;
-   ListView listView;
-
+    ListView listView;
+    TextView msg;
 
 
     @Override
@@ -65,27 +67,15 @@ public class Home extends AppCompatActivity {
         camerPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storgePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         cam = (ImageButton)findViewById(R.id.imageButton2);
-      listView = (ListView) findViewById(R.id.listView);
+        listView = (ListView) findViewById(R.id.listView);
         search = (EditText) findViewById(R.id.editText);
-
         myDB = new DBHandler(this);
         mList = new ArrayList<>();
         mAdapter = new RecordListAdapter(this,R.layout.row,mList);
-
-
-
-
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    return false;
-                }
-            });
-      //  LongClick();
-       Click();
-       Dispdata();
-
-
+        ShowData();
+        Notifier();
+        LongClick();
+        Click();
 
     }
 
@@ -108,48 +98,54 @@ public class Home extends AppCompatActivity {
             }
         });
     }
-        public void Dispdata()
-        {
-            listView.setAdapter(mAdapter);
-
-
-            try {
-                Cursor cursor = myDB.getAllData();
-                mList.clear();
-
-                while(cursor.moveToNext()) {
-                    int id = cursor.getInt(0);
-                    String name = cursor.getString(1);
-                    String company = cursor.getString(5);
-                    //  byte[] image = cursor.getBlob(7);
-                    String status = cursor.getString(7);
-                    mList.add(new Model(id,name, company,status));
-
-                }
-
-                mAdapter.notifyDataSetChanged();
-                if (mList.size() == 0) {
-                    Toast.makeText(this, "No record found", Toast.LENGTH_SHORT).show();
-
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    /*
     public void LongClick()
     {
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-               //showDialogListView(null);
+               showDialogListView(null);
                 return false;
             }
         });
     }
+    public void Notifier()
+    {
 
-*/
+
+
+
+    }
+    public void ShowData()
+    {
+
+        listView.setAdapter(mAdapter);
+
+        try {
+
+
+            Cursor cursor = myDB.getAllData();
+            mList.clear();
+            while(cursor.moveToNext()) {
+                final int id = cursor.getInt(0);
+                String name = cursor.getString(1);
+                String company = cursor.getString(5);
+                //    byte[] image = cursor.getBlob(7);
+                String status = cursor.getString(7);
+                mList.add(new Model(id, name, company, status));
+            }
+
+            if (mList.size() == 0) {
+                Toast.makeText(this, "No record found", Toast.LENGTH_SHORT).show();
+
+
+            }
+            mAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -282,9 +278,35 @@ public class Home extends AppCompatActivity {
         }
     }
 
+    public void openDialog()
+    {
+        ListView listview = null;
+        listview = new ListView(this);
+        String[] items = {"Edit","Delete"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.list_item,R.id.txtitem,items );
+        listview.setAdapter(adapter);
 
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ViewGroup vg = (ViewGroup) view;
+                TextView txt = (TextView) vg.findViewById(R.id.txtitem);
+                Toast.makeText(Home.this,txt.getText().toString(),Toast.LENGTH_LONG).show();
+            }
+        });
 
+    }
 
+    public void showDialogListView(View view)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
+        builder.setCancelable(true);
+        builder.setPositiveButton("OK",null);
+
+        builder.setView(listView);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
     private void pickCamera() {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.Images.Media.TITLE, "NewPic");
