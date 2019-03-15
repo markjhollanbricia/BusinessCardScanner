@@ -9,8 +9,8 @@ public class Model
     private byte[] image;
     private String status;
 
-    public Model(int id, String name, String company,String status) {
-        this.id = id;
+    public Model( String name, String company,String status) {
+      //  this.id = id;
         this.name = name;
         this.company = company;
       //  this.image = image;

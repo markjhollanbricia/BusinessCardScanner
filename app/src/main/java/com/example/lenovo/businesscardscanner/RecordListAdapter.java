@@ -8,23 +8,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class RecordListAdapter extends BaseAdapter {
+public class RecordListAdapter extends BaseAdapter implements Filterable {
 
     private Context context;
     private int layout;
-    private ArrayList<Model> recordList;
-
+    ArrayList<Model> recordList,tempArray;
+    CustomFilter cs;
     public RecordListAdapter(Context context, int layout, ArrayList<Model> recordList)
     {
         this.context = context;
         this.layout = layout;
         this.recordList = recordList;
+        this.tempArray = recordList;
     }
 
     @Override
@@ -80,5 +83,51 @@ public class RecordListAdapter extends BaseAdapter {
       //  Bitmap bitmap = BitmapFactory.decodeByteArray(recordImage,0,recordImage.length);
        // holder.imageView.setImageBitmap(bitmap);
         return row;
+    }
+
+
+    public Filter getFilter()
+    {
+        if(cs == null)
+        {
+            cs = new CustomFilter();
+        }
+        return cs;
+    }
+    class CustomFilter extends Filter
+    {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+            if(constraint!=null && constraint.length()>0)
+            {
+                constraint = constraint.toString().toUpperCase();
+
+            ArrayList<Model> filters = new ArrayList<>();
+            for(int i = 0; i < tempArray.size(); i++)
+            {
+                if(tempArray.get(i).getName().toUpperCase().contains(constraint) || tempArray.get(i).getCompany().toUpperCase().contains(constraint) ||  tempArray.get(i).getStatus().toUpperCase().contains(constraint) )
+                {
+                    Model model = new Model(tempArray.get(i).getName(),tempArray.get(i).getCompany(),tempArray.get(i).getStatus());
+                    filters.add(model);
+                }
+            }
+            results.count = filters.size();
+            results.values = filters;
+            }
+            else
+            {
+                results.count = tempArray.size();
+                results.values = tempArray;
+            }
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+                recordList = (ArrayList<Model>)results.values;
+                notifyDataSetChanged();
+        }
     }
 }

@@ -3,7 +3,9 @@ package com.example.lenovo.businesscardscanner;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,10 +17,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +44,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity implements TextWatcher {
 
     private static final int CAMER_PERMISION_CODE = 200;
     private static final int STORGE_PERMISION_CODE = 400;
@@ -48,15 +54,13 @@ public class Home extends AppCompatActivity {
     String camerPermission[];
     String storgePermission[];
     String n;
-
     ImageButton cam;
-
     DBHandler myDB;
     EditText search;
     ArrayList<Model> mList;
     RecordListAdapter mAdapter = null;
-    ListView listView;
-    TextView msg;
+   ListView listView;
+
 
 
     @Override
@@ -67,18 +71,79 @@ public class Home extends AppCompatActivity {
         camerPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storgePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         cam = (ImageButton)findViewById(R.id.imageButton2);
-        listView = (ListView) findViewById(R.id.listView);
-        search = (EditText) findViewById(R.id.editText);
+      listView = (ListView) findViewById(R.id.listView);
+        search = (EditText) findViewById(R.id.search);
+        search.addTextChangedListener(this);
         myDB = new DBHandler(this);
         mList = new ArrayList<>();
         mAdapter = new RecordListAdapter(this,R.layout.row,mList);
-        ShowData();
-        Notifier();
-        LongClick();
-        Click();
+registerForContextMenu(listView);
+
+
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    return false;
+                }
+            });
+      //  LongClick();
+        Notification();
+       Click();
+        listView.setAdapter(mAdapter);
+
+
+        try {
+            Cursor cursor = myDB.getAllData();
+            mList.clear();
+
+            while(cursor.moveToNext()) {
+                //  int id = cursor.getInt(0);
+                String name = cursor.getString(1);
+                String company = cursor.getString(5);
+                //  byte[] image = cursor.getBlob(7);
+                String status = cursor.getString(7);
+                mList.add(new Model(name, company,status));
+
+            }
+
+            mAdapter.notifyDataSetChanged();
+            if (mList.size() == 0) {
+                Toast.makeText(this, "No record found", Toast.LENGTH_SHORT).show();
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
 
     }
+//----------------
 
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,ContextMenu.ContextMenuInfo menuInfo)
+    {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("Select an Action");
+        menu.add(0,v.getId(),0,"Delete");
+        menu.add(0,v.getId(),0,"Edit");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item)
+    {
+        if (item.getTitle()=="Delete")
+        {
+            Toast.makeText(this,"Delete",Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(this,"Edit",Toast.LENGTH_SHORT).show();
+        }
+        return true;
+    }
     public void Click()
     {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -98,54 +163,33 @@ public class Home extends AppCompatActivity {
             }
         });
     }
+
+    /*
     public void LongClick()
     {
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-               showDialogListView(null);
+               //showDialogListView(null);
                 return false;
             }
         });
     }
-    public void Notifier()
+
+*/
+
+    void Notification()
     {
-
-
+       NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+               .setSmallIcon(R.mipmap.ic_launcher)
+               .setContentTitle("Business Card Scanner")
+               .setContentText("Sync Data");
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(0,mBuilder.build());
 
 
     }
-    public void ShowData()
-    {
-
-        listView.setAdapter(mAdapter);
-
-        try {
-
-
-            Cursor cursor = myDB.getAllData();
-            mList.clear();
-            while(cursor.moveToNext()) {
-                final int id = cursor.getInt(0);
-                String name = cursor.getString(1);
-                String company = cursor.getString(5);
-                //    byte[] image = cursor.getBlob(7);
-                String status = cursor.getString(7);
-                mList.add(new Model(id, name, company, status));
-            }
-
-            if (mList.size() == 0) {
-                Toast.makeText(this, "No record found", Toast.LENGTH_SHORT).show();
-
-
-            }
-            mAdapter.notifyDataSetChanged();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -278,35 +322,9 @@ public class Home extends AppCompatActivity {
         }
     }
 
-    public void openDialog()
-    {
-        ListView listview = null;
-        listview = new ListView(this);
-        String[] items = {"Edit","Delete"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.list_item,R.id.txtitem,items );
-        listview.setAdapter(adapter);
 
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ViewGroup vg = (ViewGroup) view;
-                TextView txt = (TextView) vg.findViewById(R.id.txtitem);
-                Toast.makeText(Home.this,txt.getText().toString(),Toast.LENGTH_LONG).show();
-            }
-        });
 
-    }
 
-    public void showDialogListView(View view)
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
-        builder.setCancelable(true);
-        builder.setPositiveButton("OK",null);
-
-        builder.setView(listView);
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
     private void pickCamera() {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.Images.Media.TITLE, "NewPic");
@@ -352,4 +370,19 @@ public class Home extends AppCompatActivity {
 
     }
 
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        this.mAdapter.getFilter().filter(s);
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
 }
