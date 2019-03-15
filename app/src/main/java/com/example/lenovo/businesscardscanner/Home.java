@@ -3,7 +3,9 @@ package com.example.lenovo.businesscardscanner;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,10 +17,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +44,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity implements TextWatcher {
 
     private static final int CAMER_PERMISION_CODE = 200;
     private static final int STORGE_PERMISION_CODE = 400;
@@ -66,12 +72,12 @@ public class Home extends AppCompatActivity {
         storgePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         cam = (ImageButton)findViewById(R.id.imageButton2);
       listView = (ListView) findViewById(R.id.listView);
-        search = (EditText) findViewById(R.id.editText);
-
+        search = (EditText) findViewById(R.id.search);
+        search.addTextChangedListener(this);
         myDB = new DBHandler(this);
         mList = new ArrayList<>();
         mAdapter = new RecordListAdapter(this,R.layout.row,mList);
-
+registerForContextMenu(listView);
 
 
 
@@ -82,13 +88,62 @@ public class Home extends AppCompatActivity {
                 }
             });
       //  LongClick();
+        Notification();
        Click();
-       Dispdata();
+        listView.setAdapter(mAdapter);
+
+
+        try {
+            Cursor cursor = myDB.getAllData();
+            mList.clear();
+
+            while(cursor.moveToNext()) {
+                //  int id = cursor.getInt(0);
+                String name = cursor.getString(1);
+                String company = cursor.getString(5);
+                //  byte[] image = cursor.getBlob(7);
+                String status = cursor.getString(7);
+                mList.add(new Model(name, company,status));
+
+            }
+
+            mAdapter.notifyDataSetChanged();
+            if (mList.size() == 0) {
+                Toast.makeText(this, "No record found", Toast.LENGTH_SHORT).show();
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
 
     }
+//----------------
 
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,ContextMenu.ContextMenuInfo menuInfo)
+    {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("Select an Action");
+        menu.add(0,v.getId(),0,"Delete");
+        menu.add(0,v.getId(),0,"Edit");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item)
+    {
+        if (item.getTitle()=="Delete")
+        {
+            Toast.makeText(this,"Delete",Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(this,"Edit",Toast.LENGTH_SHORT).show();
+        }
+        return true;
+    }
     public void Click()
     {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -108,34 +163,7 @@ public class Home extends AppCompatActivity {
             }
         });
     }
-        public void Dispdata()
-        {
-            listView.setAdapter(mAdapter);
 
-
-            try {
-                Cursor cursor = myDB.getAllData();
-                mList.clear();
-
-                while(cursor.moveToNext()) {
-                    int id = cursor.getInt(0);
-                    String name = cursor.getString(1);
-                    String company = cursor.getString(5);
-                    //  byte[] image = cursor.getBlob(7);
-                    String status = cursor.getString(7);
-                    mList.add(new Model(id,name, company,status));
-
-                }
-
-                mAdapter.notifyDataSetChanged();
-                if (mList.size() == 0) {
-                    Toast.makeText(this, "No record found", Toast.LENGTH_SHORT).show();
-
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     /*
     public void LongClick()
     {
@@ -150,6 +178,18 @@ public class Home extends AppCompatActivity {
     }
 
 */
+
+    void Notification()
+    {
+       NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+               .setSmallIcon(R.mipmap.ic_launcher)
+               .setContentTitle("Business Card Scanner")
+               .setContentText("Sync Data");
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(0,mBuilder.build());
+
+
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -330,4 +370,19 @@ public class Home extends AppCompatActivity {
 
     }
 
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        this.mAdapter.getFilter().filter(s);
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
 }

@@ -424,6 +424,8 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 String status1 = status;
 
 
+
+
                 HashMap<String, String> postData = new HashMap<>();
                 postData.put("txtFname", fname);
                 postData.put("txtPhone", phone);
