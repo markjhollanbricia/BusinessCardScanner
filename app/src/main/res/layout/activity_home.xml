@@ -22,7 +22,6 @@
             android:layout_width="match_parent"
             android:layout_height="502dp">
 
-
             <EditText
                 android:id="@+id/search"
                 android:layout_width="279dp"

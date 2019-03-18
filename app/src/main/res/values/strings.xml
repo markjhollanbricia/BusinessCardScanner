@@ -50,4 +50,9 @@
     <string name="title_activity_tabpage">tabpage</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    
+    
+    <string name="err_name">Please input a valid name</string>
+    <string name="err_tel">Please input a valid number</string>
+    <string name="err_email">Please input a valid email</string>
 </resources>
