@@ -80,7 +80,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     final String TAG = "Contacts";
     EditText n, pn, e, p , c;
     Button btnsave, view;
-    Spinner spin2;
     String status2 = "Sync is OFF";
     String status = "Sync is ON";
     DBHandler myDB;
@@ -124,9 +123,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         openContacts();
         e.setSingleLine(false);
         e.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-
-
-
     }
 
     public void openContacts()
@@ -314,8 +310,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         Pattern counPattern = Pattern.compile(Country_PATTERN);
 
         String possibleEmail, possibleCompany, possibleName, possiblePhone, possiblePosition, possibleCountry;
-
-
         possibleEmail = possibleCompany = possiblePhone = possiblePosition = possibleName = possibleCountry = "";
 
         Matcher matcher;
@@ -353,16 +347,10 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                 continue;
 
             }
-
-
         }
-
-
-
 
       pn.setText(possiblePhone);
     //  n.setText(possibleName);
-
         e.setText(possibleEmail);
         c.setText(possibleCompany);
         p.setText(possiblePosition);
@@ -394,14 +382,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
         }
 
-
-
-
-
         autoTV.setText(possibleCountry);
-
-
-
     }
 
     @Override
@@ -579,7 +560,8 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
             //starting the activity...
             startActivity(intent);
-        }else{
+        }
+        else{
             Toast.makeText(getApplicationContext(), "No information to add to contacts!", Toast.LENGTH_LONG).show();
         }
 

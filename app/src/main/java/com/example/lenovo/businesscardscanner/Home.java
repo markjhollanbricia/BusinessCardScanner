@@ -1,6 +1,7 @@
 package com.example.lenovo.businesscardscanner;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
@@ -10,6 +11,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.icu.text.AlphabeticIndex;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -31,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -41,17 +46,18 @@ import com.google.android.gms.vision.text.TextBlock;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Home extends AppCompatActivity implements TextWatcher {
 
-    private static final int CAMER_PERMISION_CODE = 200;
-    private static final int STORGE_PERMISION_CODE = 400;
-    private static final int IMG_PICK_GALLARY_CODE = 1000;
+    private static final int CAMERA_PERMISSION_CODE = 200;
+    private static final int STORAGE_PERMISSION_CODE = 400;
+    private static final int IMG_PICK_GALLERY_CODE = 1000;
     private static final int IMG_PICK_CAMERA_CODE = 1001;
     Uri imgUri;
-    String camerPermission[];
+    String cameraPermission[];
     String storgePermission[];
     String n;
     ImageButton cam;
@@ -59,7 +65,7 @@ public class Home extends AppCompatActivity implements TextWatcher {
     EditText search;
     ArrayList<Model> mList;
     RecordListAdapter mAdapter = null;
-   ListView listView;
+    ListView listView;
 
 
 
@@ -68,7 +74,7 @@ public class Home extends AppCompatActivity implements TextWatcher {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        camerPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storgePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         cam = (ImageButton)findViewById(R.id.imageButton2);
       listView = (ListView) findViewById(R.id.listView);
@@ -77,51 +83,52 @@ public class Home extends AppCompatActivity implements TextWatcher {
         myDB = new DBHandler(this);
         mList = new ArrayList<>();
         mAdapter = new RecordListAdapter(this,R.layout.row,mList);
-registerForContextMenu(listView);
+        registerForContextMenu(listView);
 
-
-
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    return false;
-                }
-            });
-      //  LongClick();
         Notification();
-       Click();
+        Click();
+        updateRecordList();
         listView.setAdapter(mAdapter);
 
-
-        try {
-            Cursor cursor = myDB.getAllData();
-            mList.clear();
-
-            while(cursor.moveToNext()) {
-                //  int id = cursor.getInt(0);
-                String name = cursor.getString(1);
-                String company = cursor.getString(5);
-                //  byte[] image = cursor.getBlob(7);
-                String status = cursor.getString(7);
-                mList.add(new Model(name, company,status));
-
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long l) {
+                final CharSequence[] items = {"Update","Delete"};
+                AlertDialog.Builder dialog = new AlertDialog.Builder(Home.this);
+                dialog.setTitle("Choose an action");
+                dialog.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(i==0)
+                        {
+                            Cursor c = myDB.getIdData();
+                            ArrayList<Integer> arrID = new ArrayList<Integer>();
+                            while (c.moveToNext())
+                            {
+                                arrID.add(c.getInt(0));
+                            }
+                            showDialogUpdate(Home.this,arrID.get(position));
+                        }
+                        if(i==1)
+                        {
+                        Cursor c = myDB.getIdData();
+                            ArrayList<Integer> arrID = new ArrayList<Integer>();
+                            while (c.moveToNext())
+                            {
+                                arrID.add(c.getInt(0));
+                            }
+                            showDialogDelete(arrID.get(position));
+                        }
+                    }
+                });
+                dialog.show();
+                return true;
             }
-
-            mAdapter.notifyDataSetChanged();
-            if (mList.size() == 0) {
-                Toast.makeText(this, "No record found", Toast.LENGTH_SHORT).show();
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-
+        });
     }
 //----------------
 
-
+/*
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,ContextMenu.ContextMenuInfo menuInfo)
     {
@@ -129,20 +136,92 @@ registerForContextMenu(listView);
         menu.setHeaderTitle("Select an Action");
         menu.add(0,v.getId(),0,"Delete");
         menu.add(0,v.getId(),0,"Edit");
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item)
+    }*/
+        private void updateRecordList()
     {
-        if (item.getTitle()=="Delete")
-        {
-            Toast.makeText(this,"Delete",Toast.LENGTH_SHORT).show();
+     try {
+        Cursor cursor = myDB.getAllData();
+        mList.clear();
+
+         while(cursor.moveToNext()) {
+            //  int id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            String company = cursor.getString(5);
+            //  byte[] image = cursor.getBlob(7);
+            String status = cursor.getString(7);
+            mList.add(new Model(name, company,status));
+
         }
-        else
-        {
-            Toast.makeText(this,"Edit",Toast.LENGTH_SHORT).show();
+
+        mAdapter.notifyDataSetChanged();
+        if (mList.size() == 0) {
+            Toast.makeText(this, "No record found", Toast.LENGTH_SHORT).show();
+
         }
-        return true;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    }
+    void showDialogUpdate(Activity activity, final int position)
+    {
+        final Dialog dialog = new Dialog(activity);
+        dialog.setContentView(R.layout.update);
+        dialog.setTitle("Update");
+
+        final EditText  neym = dialog.findViewById(R.id.edtname);
+        final EditText  pone = dialog.findViewById(R.id.edtcpnum);
+        final EditText  em = dialog.findViewById(R.id.edtemail);
+        final EditText  po = dialog.findViewById(R.id.edtposition);
+        final EditText  co = dialog.findViewById(R.id.edtcompany);
+        final EditText  cnn = dialog.findViewById(R.id.edtautoTextView);
+        Button b = dialog.findViewById(R.id.up1);
+
+        int width = (int)(activity.getResources().getDisplayMetrics().widthPixels*0.95);
+        int height = (int)(activity.getResources().getDisplayMetrics().heightPixels*0.7);
+        dialog.getWindow().setLayout(width,height);
+        dialog.show();
+
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                    myDB.update(
+                            neym.getText().toString().trim(),pone.getText().toString().trim(),
+                            em.getText().toString().trim(),po.getText().toString().trim(),
+                            co.getText().toString().trim(),cnn.getText().toString().trim(),position);
+                    dialog.dismiss();
+                    Toast.makeText(Home.this, "Update Successfully", Toast.LENGTH_SHORT).show();
+
+
+                updateRecordList();
+            }
+        });
+    }
+    private void  showDialogDelete(final int idRecord)
+    {
+        AlertDialog.Builder dialogDelete = new AlertDialog.Builder(Home.this);
+        dialogDelete.setTitle("Warning!");
+        dialogDelete.setMessage("Are you sure to delete?");
+        dialogDelete.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    myDB.deletedata(idRecord);
+                    Toast.makeText(Home.this, "Delete Successfully", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Log.e("error", e.getMessage());
+                }
+                updateRecordList();
+            }
+        });
+        dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialogDelete.show();
     }
     public void Click()
     {
@@ -164,36 +243,26 @@ registerForContextMenu(listView);
         });
     }
 
-    /*
-    public void LongClick()
-    {
-
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-               //showDialogListView(null);
-                return false;
-            }
-        });
-    }
-
-*/
-
     void Notification()
     {
-       NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-               .setSmallIcon(R.mipmap.ic_launcher)
-               .setContentTitle("Business Card Scanner")
-               .setContentText("Sync Data");
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0,mBuilder.build());
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+
+            NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle("Business Card Scanner")
+                    .setContentText("Sync Data");
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(0, mBuilder.build());
+
+        }
 
 
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-
         getMenuInflater().inflate(R.menu.commommenu, menu);
         return true;
     }
@@ -238,8 +307,8 @@ registerForContextMenu(listView);
 
     public void Cam(View view)
     {
-        if (!chickCameraPermision()) {
-            requestCameraPermision();
+        if (!clickCameraPermission()) {
+            requestCameraPermission();
         } else {
             pickCamera();
         }
@@ -252,7 +321,7 @@ registerForContextMenu(listView);
             if (resultCode==RESULT_OK)
             {
                 // Toast.makeText(this, "result 1 ok", Toast.LENGTH_SHORT).show();
-                if (requestCode==IMG_PICK_GALLARY_CODE)
+                if (requestCode==IMG_PICK_GALLERY_CODE)
                 {
                     CropImage.activity(data.getData()).setGuidelines(CropImageView.Guidelines.ON).start(this);
                 }
@@ -289,12 +358,12 @@ registerForContextMenu(listView);
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode)
         {
-            case CAMER_PERMISION_CODE:
+            case CAMERA_PERMISSION_CODE:
                 if (grantResults.length>0)
                 {
                     boolean cameraAc=grantResults[0]==PackageManager.PERMISSION_GRANTED;
-                    boolean wirteEX = grantResults[0]==PackageManager.PERMISSION_GRANTED;
-                    if (cameraAc&&wirteEX)
+                    boolean writeEX = grantResults[0]==PackageManager.PERMISSION_GRANTED;
+                    if (cameraAc&&writeEX)
                     {
                         pickCamera();
                     }
@@ -304,7 +373,7 @@ registerForContextMenu(listView);
 
                 }
                 break;
-            case STORGE_PERMISION_CODE:
+            case STORAGE_PERMISSION_CODE:
                 if (grantResults.length>0)
                 {
 
@@ -338,23 +407,23 @@ registerForContextMenu(listView);
     private void pickGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
-        startActivityForResult(intent,IMG_PICK_GALLARY_CODE);
+        startActivityForResult(intent,IMG_PICK_GALLERY_CODE);
     }
-    private void requestStorgePermision() {
-        ActivityCompat.requestPermissions(this, storgePermission, STORGE_PERMISION_CODE);
+    private void requestStoragePermission() {
+        ActivityCompat.requestPermissions(this, storgePermission, STORAGE_PERMISSION_CODE);
     }
 
-    private boolean chickStorgePermision() {
+    private boolean clickStoragePermission() {
         boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
         return result;
     }
 
-    private void requestCameraPermision() {
-        ActivityCompat.requestPermissions(this, camerPermission, CAMER_PERMISION_CODE);
+    private void requestCameraPermission() {
+        ActivityCompat.requestPermissions(this, cameraPermission, CAMERA_PERMISSION_CODE);
 
     }
 
-    private boolean chickCameraPermision() {
+    private boolean clickCameraPermission() {
         boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
         boolean result1 = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
         return result && result1;
@@ -362,8 +431,8 @@ registerForContextMenu(listView);
 
     public void Register(View view)
     {
-        if (!chickStorgePermision()) {
-            requestStorgePermision();
+        if (!clickStoragePermission()) {
+            requestStoragePermission();
         } else {
             pickGallery();
         }
