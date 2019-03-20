@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 
 import java.io.ByteArrayOutputStream;
@@ -44,11 +45,13 @@ public class DBHandler extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
-    public void delete(String id)
+    public void delete(long id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
-        db.delete(TABLE_NAME, COL_1 + "=?", new String[]{id});
-        db.close();
+
+        String string = String.valueOf(id);
+        db.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + COL_1
+                + "=" + id + "");
     }
     public boolean insertData ( String Name, String Phonenumber, String Email, String Position, String Company, String Country, String Status){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -103,6 +106,12 @@ public class DBHandler extends SQLiteOpenHelper
 
         return cursor;
     }
+    public Cursor getIdData(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT "+ COL_1 +" FROM " + TABLE_NAME, null);
+
+        return cursor;
+    }
     public Cursor getEventAttendance(String name){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT *  FROM " + TABLE_NAME +
@@ -135,6 +144,27 @@ public class DBHandler extends SQLiteOpenHelper
         String query = "Select * from " + TABLE_NAME + " Where " + COL_2 + " Like '%"+text+"%'";
         Cursor cursor = db.rawQuery(query,null);
         return cursor;
+    }
+    public void deletedata(int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAME,COL_1+ "=" +id,null);
+        db.close();
+    }
+
+    public void update(String n,String pn,String e,String p,String c,String cn,int id)
+    {
+        SQLiteDatabase database =  getWritableDatabase();
+        String sql = "Update tblHolder set Name=?, Phonenumber=?, Email=?, Position=?, Company=?, Country=? WHERE contactid=?";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.bindString(1,n);
+        statement.bindString(2,pn);
+        statement.bindString(3,e);
+        statement.bindString(4,p);
+        statement.bindString(5,c);
+        statement.bindString(6,cn);
+        statement.bindDouble(7,(double)id);
+        statement.executeInsert();
+        database.close();
     }
 
 

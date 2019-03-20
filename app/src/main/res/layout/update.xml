@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BScanner"
+    android:background="@color/bg">
+
+
+    <RelativeLayout
+        android:id="@+id/relative1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg"
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/iv1"
+                android:layout_width="198dp"
+                android:layout_height="89dp"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:src="@drawable/bck2"
+                />
+            <TextView
+                android:layout_marginTop="1dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:text="BusinessCard Scanner"
+                android:layout_marginBottom="5dp"
+                android:textColor="#ffffff"
+                android:textSize="30sp"
+                android:id="@+id/bcs"
+                />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="20dp"
+            android:rotation="45"
+            android:layout_marginTop="-10dp"
+            android:layout_below="@+id/linearLayout1"
+            android:layout_centerHorizontal="true"
+            android:layout_height="20dp"
+
+            />
+
+
+        <RelativeLayout
+            android:id="@+id/relative3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageView1"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
+            >
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
+            <EditText
+                android:id="@+id/edtname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/imgView_Icon"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/imgView_Icon"
+                android:textColorHint="@color/white"
+                android:ems="10"
+                android:textColor="@color/white"
+                android:hint="*Name"
+                android:inputType="textPersonName"
+                android:paddingLeft="20dp"
+                android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relative5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative3"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
+            >
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
+
+            <EditText
+                android:textColorHint="@color/white"
+                android:id="@+id/edtcpnum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/Icon2"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/Icon2"
+                android:textColor="@color/white"
+                android:hint="*Phone Number"
+                android:inputType="none"
+                android:paddingLeft="20dp"
+                android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relative4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative5"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
+            >
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
+
+            <EditText
+                android:textColorHint="@color/white"
+                android:id="@+id/edtemail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignBottom="@+id/Icon1"
+                android:layout_toRightOf="@+id/Icon1"
+                android:textColor="@color/white"
+                android:hint="*Email"
+                android:inputType="textCapSentences|textMultiLine|textEmailAddress"
+                android:paddingLeft="20dp"
+                android:textSize="15sp"
+                android:maxLength="2000"
+                android:maxLines="4"
+                />
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relative6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative4"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
+            >
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
+            <EditText
+                android:id="@+id/edtposition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/white"
+                android:layout_alignParentTop="true"
+                android:textColor="@color/white"
+                android:ems="10"
+                android:hint="*Position"
+                android:paddingLeft="20dp"
+                android:inputType="text"
+                android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/relative8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative7"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
+            >
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
+
+                <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Country"
+                    android:textColorHint="@color/white"
+                    android:id="@+id/edtautoTextView"
+                    android:paddingLeft="20dp"
+                    android:textSize="15sp"
+                    android:textColor="@color/white"
+                    android:ems="10"
+                    />
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/relative7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative6"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
+            >
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/white">
+            <EditText
+                android:id="@+id/edtcompany"
+                android:textColor="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:hint="Company"
+                android:ems="10"
+                android:textColorHint="@color/white"
+                android:paddingLeft="20dp"
+                android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+
+
+
+
+        <Button
+            android:id="@+id/up1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative8"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="11dp"
+            android:layout_marginRight="30dp"
+            android:background="@color/colorPrimary"
+            android:fontFamily="sans-serif-medium"
+            android:text="Update"
+            android:textColor="#ffffff" />
+
+        <Button
+            android:id="@+id/save2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/save1"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="11dp"
+            android:layout_marginRight="30dp"
+            android:background="@color/colorPrimary"
+            android:fontFamily="sans-serif-medium"
+            android:text="Add to Contacts"
+            android:textColor="#ffffff" />
+
+
+    </RelativeLayout>
+</ScrollView>

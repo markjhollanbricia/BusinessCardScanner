@@ -29,13 +29,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,9 +59,7 @@ public class Home extends AppCompatActivity implements TextWatcher {
     EditText search;
     ArrayList<Model> mList;
     RecordListAdapter mAdapter = null;
-    ListView listView;
-    ArrayAdapter<String> adapter;
-    SearchView sv;
+   ListView listView;
 
 
 
@@ -71,20 +67,16 @@ public class Home extends AppCompatActivity implements TextWatcher {
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_home);
         camerPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storgePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         cam = (ImageButton)findViewById(R.id.imageButton2);
-        listView = (ListView) findViewById(R.id.listView);
+      listView = (ListView) findViewById(R.id.listView);
+        search = (EditText) findViewById(R.id.search);
         search.addTextChangedListener(this);
         myDB = new DBHandler(this);
         mList = new ArrayList<>();
         mAdapter = new RecordListAdapter(this,R.layout.row,mList);
-        listView.setAdapter(adapter);
-
-
-
 registerForContextMenu(listView);
 
 
@@ -129,9 +121,6 @@ registerForContextMenu(listView);
     }
 //----------------
 
-    public boolean onQueryTextSubmit(String query){
-        return false;
-    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,ContextMenu.ContextMenuInfo menuInfo)

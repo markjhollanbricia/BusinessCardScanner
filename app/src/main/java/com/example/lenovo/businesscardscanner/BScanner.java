@@ -36,7 +36,6 @@ import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -77,7 +76,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BScanner extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class BScanner extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     final String TAG = "Contacts";
     EditText n, pn, e, p , c;
     Button btnsave, view;
@@ -93,14 +92,12 @@ public class BScanner extends Activity implements View.OnClickListener, AdapterV
     final int REQUEST_CODE_GALLERY = 999;
     ListView listView;
     private AutoCompleteTextView autoTV;
-    AwesomeValidation av;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_bscanner);
         myDB = new DBHandler(this);
         n = (EditText) findViewById(R.id.name);
@@ -128,33 +125,7 @@ public class BScanner extends Activity implements View.OnClickListener, AdapterV
         e.setSingleLine(false);
         e.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
 
-        av = new AwesomeValidation(ValidationStyle.BASIC);
 
-        updateUI();
-    }
-
-    private void updateUI(){
-        n = (EditText) findViewById(R.id.name);
-        pn = (EditText) findViewById(R.id.cpnum);
-        e = (EditText) findViewById(R.id.email);
-        btnsave = (Button) findViewById(R.id.save1);
-
-        av.addValidation(BScanner.this,R.id.name, "[a-zA-Z\\s]+", R.string.err_name);
-        av.addValidation(BScanner.this, R.id.cpnum, RegexTemplate.TELEPHONE, R.string.err_tel);
-        av.addValidation(BScanner.this, R.id.email, android.util.Patterns.EMAIL_ADDRESS, R.string.err_email);
-
-        btnsave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(av.validate()){
-                    Toast.makeText(BScanner.this,"Data Received Successfully", Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    Toast.makeText(BScanner.this,"Error",Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
 
     }
 
@@ -323,7 +294,7 @@ public class BScanner extends Activity implements View.OnClickListener, AdapterV
             "(?:^|\\s)(?:Corporation|Corp|Inc|Incorporated|Company|LTD|PLLC|P\\.C)\\.?$";
 
     private static final String NAME_PATTERN =
-            "[a-zA-Z\\s]+";
+            "^[a-zA-Z][.][15]$";
 
     private static final String Phone_PATTERN =
             "(?:^|\\D)(\\d{3})[)\\-. ]*?(\\d{3})[\\-. ]*?(\\d{4})(?:$|\\D)";
