@@ -395,7 +395,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                     connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
 
-
                 String fname = n.getText().toString();
                 String phone = pn.getText().toString();
                 String email = e.getText().toString();

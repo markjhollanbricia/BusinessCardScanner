@@ -145,7 +145,6 @@ public class DBHandler extends SQLiteOpenHelper
         Cursor cursor = db.rawQuery(query,null);
         return cursor;
     }
-
     public void deletedata(int id){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAME,COL_1+ "=" +id,null);

@@ -127,7 +127,6 @@ public class Home extends AppCompatActivity implements TextWatcher {
         });
     }
 //----------------
-
 /*
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,ContextMenu.ContextMenuInfo menuInfo)
