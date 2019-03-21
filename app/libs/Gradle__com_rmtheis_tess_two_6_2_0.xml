@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.rmtheis:tess-two-6.2.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.android/build-cache/90350246eb14a3131e26a96820aa8f7b8679b88d/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/90350246eb14a3131e26a96820aa8f7b8679b88d/output/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.rmtheis/tess-two/6.2.0/79e429c0e719f072530137542851f587ddd4ab58/tess-two-6.2.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
