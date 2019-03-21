@@ -36,6 +36,7 @@ import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -76,9 +77,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BScanner extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class BScanner extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     final String TAG = "Contacts";
-    EditText n, pn, e, p , c;
+    EditText n, pn, e, p, c;
     Button btnsave, view;
     Spinner spin2;
     String status2 = "Sync is OFF";
@@ -92,12 +93,13 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     final int REQUEST_CODE_GALLERY = 999;
     ListView listView;
     private AutoCompleteTextView autoTV;
-
+    AwesomeValidation av;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_bscanner);
         myDB = new DBHandler(this);
         n = (EditText) findViewById(R.id.name);
@@ -106,7 +108,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         e = (EditText) findViewById(R.id.email);
         p = (EditText) findViewById(R.id.position);
         c = (EditText) findViewById(R.id.company);
-       autoTV = (AutoCompleteTextView) findViewById(R.id.autoTextView);
+        autoTV = (AutoCompleteTextView) findViewById(R.id.autoTextView);
         btnsave = (Button) findViewById(R.id.save1);
         view = (Button) findViewById(R.id.view);
         iv1 = (ImageView) findViewById(R.id.iv1);
@@ -125,13 +127,37 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         e.setSingleLine(false);
         e.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
 
+        av = new AwesomeValidation(ValidationStyle.BASIC);
 
 
     }
 
-    public void openContacts()
-    {
-        openContacts.setOnClickListener(new View.OnClickListener(){
+    private void updateUI() {
+        n = (EditText) findViewById(R.id.name);
+        pn = (EditText) findViewById(R.id.cpnum);
+        e = (EditText) findViewById(R.id.email);
+        btnsave = (Button) findViewById(R.id.save1);
+
+        av.addValidation(BScanner.this, R.id.name, "[a-zA-Z\\s]+", R.string.err_name);
+        av.addValidation(BScanner.this, R.id.cpnum, RegexTemplate.TELEPHONE, R.string.err_tel);
+        av.addValidation(BScanner.this, R.id.email, android.util.Patterns.EMAIL_ADDRESS, R.string.err_email);
+
+        btnsave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (av.validate()) {
+                    Toast.makeText(BScanner.this, "Data Received Successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(BScanner.this, "Error", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+    }
+
+    public void openContacts() {
+        openContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addToContacts();
@@ -139,8 +165,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         });
     }
 
-    public void CaptureImage()
-    {
+    public void CaptureImage() {
         /* Getting ImageBitmap from Camera from Main Activity */
         Intent intent_camera = getIntent();
         Bitmap camera_img_bitmap = (Bitmap) intent_camera
@@ -150,8 +175,8 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         }
 
     }
-    public void GalleryImage()
-    {
+
+    public void GalleryImage() {
         Uri selectedImgUri = getIntent().getData();
         if (selectedImgUri != null) {
             Log.e("Gallery ImageURI", "" + selectedImgUri);
@@ -166,6 +191,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             iv1.setImageBitmap(BitmapFactory.decodeFile(imgPath));
         }
     }
+
     public void TextDetectorCropImage() {
 
         Intent intent = getIntent();
@@ -189,7 +215,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                     String words = "";
                     String blockss = "";
                     String liness = "";
-                    String wordss= "";
+                    String wordss = "";
 
                     for (int index = 0; index < textBlocks.size(); index++) {
                         //extract scanned text blocks here
@@ -201,20 +227,20 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
                         validator(blocks);
                         for (Text line : tBlockk.getComponents()) {
                             //extract scanned text lines here
-                            lines =  line.getValue() + "\n";
+                            lines = line.getValue() + "\n";
 
                             for (Text element : line.getComponents()) {
                                 //extract scanned text words here
-                                words = words + element.getValue() ;
+                                words = words + element.getValue();
 
                             }
                         }
                         for (Text line : tBlockk.getComponents()) {
                             //extract scanned text lines here
-                            lines =  line.getValue() + "\n";
+                            lines = line.getValue() + "\n";
                             for (Text element : line.getComponents()) {
                                 //extract scanned text words here
-                                words = words + element.getValue() ;
+                                words = words + element.getValue();
 
                             }
                         }
@@ -230,11 +256,11 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
 
                         for (Text line : tBlock.getComponents()) {
                             //extract scanned text lines here
-                            liness =  line.getValue() + "\n";
+                            liness = line.getValue() + "\n";
 
                             for (Text element : line.getComponents()) {
                                 //extract scanned text words here
-                                wordss =  element.getValue() ;
+                                wordss = element.getValue();
                                 validators(wordss);
                             }
                         }
@@ -256,8 +282,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public void getEditData()
-    {
+    public void getEditData() {
         Intent intent = getIntent();
         a = intent.getStringExtra("name");
         String b = intent.getStringExtra("phonenumber");
@@ -273,28 +298,28 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     }
 
 
-        String[] Country = new String[]{
-                "Country",
-                "Malaysia",
-                "United States",
-                "Indonesia",
-                "France",
-                "Italy",
-                "Singapore",
-                "New Zealand",
-                "India",
-                "Philippines"
+    String[] Country = new String[]{
+            "Country",
+            "Malaysia",
+            "United States",
+            "Indonesia",
+            "France",
+            "Italy",
+            "Singapore",
+            "New Zealand",
+            "India",
+            "Philippines"
 
-        };
+    };
 
     private static final String EMAIL_PATTERN =
-            "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])" ;
+            "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
 
     private static final String Company_PATTERN =
             "(?:^|\\s)(?:Corporation|Corp|Inc|Incorporated|Company|LTD|PLLC|P\\.C)\\.?$";
 
     private static final String NAME_PATTERN =
-            "^[a-zA-Z][.][15]$";
+            "[a-zA-Z\\s]+";
 
     private static final String Phone_PATTERN =
             "(?:^|\\D)(\\d{3})[)\\-. ]*?(\\d{3})[\\-. ]*?(\\d{4})(?:$|\\D)";
@@ -358,10 +383,8 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         }
 
 
-
-
-      pn.setText(possiblePhone);
-    //  n.setText(possibleName);
+        pn.setText(possiblePhone);
+        //  n.setText(possibleName);
 
         e.setText(possibleEmail);
         c.setText(possibleCompany);
@@ -377,7 +400,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         String possibleCountry;
 
 
-       possibleCountry = "";
+        possibleCountry = "";
 
         Matcher matcher;
 
@@ -395,11 +418,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         }
 
 
-
-
-
         autoTV.setText(possibleCountry);
-
 
 
     }
@@ -408,66 +427,63 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     public void onClick(View view) {
 
 
+        updateUI();
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
 
 
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                    connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            String fname = n.getText().toString();
+            String phone = pn.getText().toString();
+            String email = e.getText().toString();
+            String position = p.getText().toString();
+            String company = c.getText().toString();
+            String country = autoTV.getText().toString();
+            String status1 = status;
 
 
-                String fname = n.getText().toString();
-                String phone = pn.getText().toString();
-                String email = e.getText().toString();
-                String position = p.getText().toString();
-                String company = c.getText().toString();
-                String country = autoTV.getText().toString();
-                String status1 = status;
+            HashMap<String, String> postData = new HashMap<>();
+            postData.put("txtFname", fname);
+            postData.put("txtPhone", phone);
+            postData.put("txtEmail", email);
+            postData.put("txtPosition", position);
+            postData.put("txtCompany", company);
+            postData.put("txtCountry", country);
+            postData.put("txtStatus", status1);
 
-
-
-
-                HashMap<String, String> postData = new HashMap<>();
-                postData.put("txtFname", fname);
-                postData.put("txtPhone", phone);
-                postData.put("txtEmail", email);
-                postData.put("txtPosition", position);
-                postData.put("txtCompany", company);
-                postData.put("txtCountry", country);
-                postData.put("txtStatus", status1);
-
-                myDB.insertData(n.getText().toString(), pn.getText().toString(),
-                        e.getText().toString(), p.getText().toString(), c.getText().toString(),
-                        autoTV.getText().toString(), status1);
-
-                PostResponseAsyncTask task1 = new PostResponseAsyncTask(this,
-                        postData, new AsyncResponse() {
-                    @Override
-                    public void processFinish(String s) {
-                        Log.d(TAG, s);
-                        if (s.contains("ErrorInsert")) {
-                            Toast.makeText(BScanner.this, "Failed to insert data", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(BScanner.this, "Data inserted", Toast.LENGTH_SHORT).show();
-                            Intent in = new Intent(getApplicationContext(),
-                                    Home.class);
-                            startActivity(in);
-                        }
-                    }
-                });
-                task1.execute("http://172.16.50.127/ALT/contacts.php");
-
-            } else if (myDB.insertData(n.getText().toString(), pn.getText().toString(),
+            myDB.insertData(n.getText().toString(), pn.getText().toString(),
                     e.getText().toString(), p.getText().toString(), c.getText().toString(),
-                    autoTV.getText().toString(), status2)) {
+                    autoTV.getText().toString(), status1);
 
-                Toast.makeText(BScanner.this, "Data Inserted", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(getApplicationContext(), Home.class);
-                startActivity(i);
-            } else {
-                Toast.makeText(BScanner.this, "Data Not Inserted", Toast.LENGTH_SHORT).show();
-            }
+            PostResponseAsyncTask task1 = new PostResponseAsyncTask(this,
+                    postData, new AsyncResponse() {
+                @Override
+                public void processFinish(String s) {
+                    Log.d(TAG, s);
+                    if (s.contains("ErrorInsert")) {
+                        Toast.makeText(BScanner.this, "Failed to insert data", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(BScanner.this, "Data inserted", Toast.LENGTH_SHORT).show();
+                        Intent in = new Intent(getApplicationContext(),
+                                Home.class);
+                        startActivity(in);
+                    }
+                }
+            });
+            task1.execute("http://172.16.50.127/ALT/contacts.php");
+
+        } else if (myDB.insertData(n.getText().toString(), pn.getText().toString(),
+                e.getText().toString(), p.getText().toString(), c.getText().toString(),
+                autoTV.getText().toString(), status2)) {
+
+            Toast.makeText(BScanner.this, "Data Inserted", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(getApplicationContext(), Home.class);
+            startActivity(i);
+        } else {
+            Toast.makeText(BScanner.this, "Data Not Inserted", Toast.LENGTH_SHORT).show();
         }
-
+    }
 
 
     private byte[] imageViewToByte(ImageView iv1) {
@@ -542,10 +558,6 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     }
 
 
-
-
-
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
@@ -555,7 +567,8 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
-    private void addToContacts(){
+
+    private void addToContacts() {
 
         // Creates a new Intent to insert a contact
         Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
@@ -563,7 +576,7 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
         intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
 
         //Checks if we have the name, email and phone number...
-        if(n.getText().length() > 0 && ( pn.getText().length() > 0 || e.getText().length() > 0 )){
+        if (n.getText().length() > 0 && (pn.getText().length() > 0 || e.getText().length() > 0)) {
             //Adds the name...
             intent.putExtra(ContactsContract.Intents.Insert.NAME, n.getText());
 
@@ -575,11 +588,11 @@ public class BScanner extends AppCompatActivity implements View.OnClickListener,
             //Adds the phone number...
             intent.putExtra(ContactsContract.Intents.Insert.PHONE, pn.getText());
             //Adds the phone number as Work Phone
-          //  intent.putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK);
+            //  intent.putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK);
 
             //starting the activity...
             startActivity(intent);
-        }else{
+        } else {
             Toast.makeText(getApplicationContext(), "No information to add to contacts!", Toast.LENGTH_LONG).show();
         }
 

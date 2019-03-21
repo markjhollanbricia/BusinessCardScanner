@@ -260,18 +260,7 @@
             android:text="Update"
             android:textColor="#ffffff" />
 
-        <Button
-            android:id="@+id/save2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/save1"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="11dp"
-            android:layout_marginRight="30dp"
-            android:background="@color/colorPrimary"
-            android:fontFamily="sans-serif-medium"
-            android:text="Add to Contacts"
-            android:textColor="#ffffff" />
+
 
 
     </RelativeLayout>

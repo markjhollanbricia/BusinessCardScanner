@@ -106,6 +106,7 @@ public class DBHandler extends SQLiteOpenHelper
 
         return cursor;
     }
+
     public Cursor getIdData(){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT "+ COL_1 +" FROM " + TABLE_NAME, null);
@@ -150,6 +151,7 @@ public class DBHandler extends SQLiteOpenHelper
         db.delete(TABLE_NAME,COL_1+ "=" +id,null);
         db.close();
     }
+
 
     public void update(String n,String pn,String e,String p,String c,String cn,int id)
     {
