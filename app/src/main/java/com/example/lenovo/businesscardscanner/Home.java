@@ -195,7 +195,6 @@ public class Home extends AppCompatActivity implements TextWatcher {
 
         }
 
-
         int width = (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.95);
         int height = (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.7);
         dialog.getWindow().setLayout(width, height);
